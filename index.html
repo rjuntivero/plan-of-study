@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Website</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body></body>
+<div class="banner">
+    <div class="banner__content">
+        <div class="banner__logo">
+            <img src="https://www.unf.edu/images/logos/UNFLogo.svg" alt="University of North Florida" width="unset"
+                height="100px">
+        </div>
+        <div class="banner__title">
+            School of Computing - <strong>PLAN OF STUDY</strong>
+        </div>
+        <div class="banner__options">
+            <button class="banner__options" type="button">
+                <span class="material-icons">
+                    settings
+                </span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="main_container">
+    <div class="panel_container">
+        <div class="sidenav">
+            <a href="#">Required Classes</a>
+            <div clas="required_course_section">
+                <ul>
+                    <li>Required Course</li>
+                    <li>Required Course</li>
+                    <li>etc</li>
+                    <li></li>
+                </ul>
+            </div>
+            <div class="required_course_section">
+                <p1>
+                    Total Credits:
+                </p1>
+            </div>
+        </div>
+
+        <div class="panel1 resizable">
+            <p> <strong>Course Catalog</strong></p>
+            <div class="course_catalog">
+                <fieldset>
+
+                    <label for="Filter Options">
+                        <legend>Search Criteria</legend>
+                        <div class="filter_names" margin-top="25px">
+                            <select name="filter" id="filter">
+                                <option disabled Selected> Subject</option>
+                                <option value="op2"> Filter 2</option>
+                            </select>
+
+                            <select name="filter1" id="filter">
+                                <option disabled selected> Semester</option>
+                                <option value="op4"> Spring</option>
+                                <option value="op5"> Summer</option>
+                                <option value="op6"> Fall</option>
+                            </select>
+
+                            <select name="filter2" id="filter">
+                                <option disabled selected> Credits</option>
+                                <option value="op8"> 0</option>
+                                <option value="op9"> 3</option>
+                                <option value="op10"> 4</option>
+                            </select>
+                        </div>
+                    </label>
+                </fieldset>
+                <div class="selection_bar">
+                    <input type="text" id="search-input" placeholder="Search Course..." class="search_bar">
+                    <input type="submit" value="Submit" class="search_button">
+                </div>
+
+            </div>
+            <div id="results"></div>
+            <script src="script.js"></script>
+        </div>
+        <div class="panel2 resizable">
+            Calendar
+        </div>
+        <button class="add__semester" type="button">
+            ADD SEMESTER
+        </button>
+        <script>
+            $(document).ready(function () {
+                $(".resizable").resizable({
+                    handles: 'e, w',
+                    resize: function (event, ui) {
+                        var containerWidth = $(".main_container").width();
+                        var panel1Width = ui.size.width;
+                        var panel2Width = containerWidth - panel1Width;
+
+                        $(".panel1").css("width", panel1Width + "px");
+                        $(".panel2").css("width", panel2Width + "px");
+                    }
+                });
+            });
+        </script>
+
+    </div>
+</div>
+
+
+
+<div>
+    <nav aria-label="Main Menu" id="navBar"></nav>
+</div>
+</body>
+
+</html>
