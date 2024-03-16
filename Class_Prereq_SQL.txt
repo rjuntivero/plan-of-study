@@ -1,0 +1,62 @@
+Create Table Course (
+    Class_id VarChar(8), 
+    Cname VarChar(40) Not Null,
+    Fall Number(1),
+    Spring Number(1),
+    Summer Number(1),
+    Credits Number(1) Not Null,
+    Description VarChar(600),
+    Primary key(Class_id),
+    Unique(Cname)
+);
+CREATE TABLE Prerequisite (
+    Class_id VarChar(8),
+    Cname VarChar(40), 
+    Prereq_cid VarChar(8),
+    Prereq_name VarChar(40),
+    FOREIGN KEY (Class_id) REFERENCES Course(Class_id),
+    Foreign Key (Prereq_cid) References Course(Class_id),
+    Foreign Key (Cname) References Course(Cname)
+);
+
+
+Insert into Course Values('COP 2220', 'Programming I', 1,1,1,3, 'Description');
+Insert into Course Values('COT 3100', 'Computational Structures', 1,1,1,3,'Description');
+Insert into Course Values('CIS 3253', 'Legal and Ethical Issues in Computing', 1,1,1,3, 'Description');
+Insert into Course Values('COP 3503', 'Programming II', 1,1,1,3, 'Description');
+Insert into Course Values('CDA 3100', 'Computer Organization and Architecture', 0,1,0,4, 'Description');
+
+Insert into Course Values('COT 3210', 'Theory of Computation', 1,0,0,3, 'Description');
+Insert into Course Values('COP 3530', 'Data Structures', 1,1,1,3, 'Description');
+Insert into Course Values('CNT 4504', 'Computer Networks', 1,1,1,3, 'Description');
+Insert into Course Values('COP 3703', 'Introduction to Databases', 1,1,1,3, 'Description');
+Insert into Course Values('COP 3404', 'Systems Programming', 1,0,0,3, 'Description');
+Insert into Course Values('COP 4620', 'Construction of Language Translators', 0,1,0,3, 'Description');
+Insert into Course Values('CEN 4010', 'Software Engineering', 0,1,0,3, 'Description');
+Insert into Course Values('COT 4400', 'Design and Analysis of Algorithms', 1,0,0,3, 'Description');
+Insert into Course Values('CAP 4630', 'Introduction to Artificial Intelligence', 0,1,0,3, 'Description');
+Insert into Course Values('COP 4610', 'Operating Systems', 0,1,0,3, 'Description');
+
+Select * from Course;
+
+Insert into Prerequisite Values('CIS 3253', 'Legal and Ethical Issues in Computing','COP 2220', 'Programming I');
+Insert into Prerequisite Values('COP 3503', 'Programming II','COP 2220', 'Programming I');
+Insert into Prerequisite Values('CDA 3100', 'Computer Organization and Architecture','COP 2220', 'Programming I');
+Insert into Prerequisite Values('COT 3210', 'Theory of Computation','COT 3100', 'Computational Structures');
+Insert into Prerequisite Values('COP 3530', 'Data Structures','COT 3100', 'Computational Structures');
+Insert into Prerequisite Values('COP 3530', 'Data Structures','COP 3503', 'Programming II');
+Insert into Prerequisite Values('CNT 4504', 'Computer Networks', 'COP 3503', 'Programming II');
+Insert into Prerequisite Values('COP 3703', 'Introduction to Databases', 'COP 3503', 'Programming II');
+Insert into Prerequisite Values('COP 3404', 'Systems Programming', 'COP 3503', 'Programming II');
+Insert into Prerequisite Values('COP 3404', 'Systems Programming','CDA 3100', 'Computer Organization and Architecture');
+Insert into Prerequisite Values('COP 4620', 'Construction of Language Translators','COT 3210', 'Theory of Computation');
+Insert into Prerequisite Values('COP 4620', 'Construction of Language Translators','COP 3530', 'Data Structures');
+Insert into Prerequisite Values('CEN 4010', 'Software Engineering','COP 3530', 'Data Structures');
+Insert into Prerequisite Values('CEN 4010', 'Software Engineering','COP 3703', 'Introduction to Databases');
+Insert into Prerequisite Values('COT 4400', 'Design and Analysis of Algorithms','COP 3530', 'Data Structures');
+Insert into Prerequisite Values('CAP 4630', 'Introduction to Artificial Intelligence','COP 3530', 'Data Structures');
+Insert into Prerequisite Values('COP 4610', 'Operating Systems','COP 3530', 'Data Structures');
+Insert into Prerequisite Values('COP 4610', 'Operating Systems','COP 3404', 'Systems Programming');
+
+
+Select * from Prerequisite;
