@@ -5,118 +5,173 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Main Website</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://unpkg.com/htmx.org/dist/htmx.js"></script>
+
 </head>
 
-<body></body>
-<div class="banner">
-    <div class="banner__content">
-        <div class="banner__logo">
-            <img src="https://www.unf.edu/images/logos/UNFLogo.svg" alt="University of North Florida" width="unset"
-                height="100px">
-        </div>
-        <div class="banner__title">
-            School of Computing - <strong>PLAN OF STUDY</strong>
-        </div>
-        <div class="banner__options">
-            <button class="banner__options" type="button">
-                <span class="material-icons">
-                    settings
-                </span>
-            </button>
+<body>
+
+    <!-- TOP BANNER-->
+    <div class="banner">
+        <div class="banner__content">
+            <div class="banner__logo">
+                <img src="https://www.unf.edu/images/logos/UNFLogo.svg" alt="University of North Florida" width="unset"
+                    height="100px">
+            </div>
+            <div class="banner__title">
+                School of Computing - <strong>PLAN OF STUDY</strong>
+            </div>
+            <div class="banner__options">
+                <button class="banner__options" type="button">
+                    <span class="material-icons">
+                        settings
+                    </span>
+                </button>
+            </div>
         </div>
     </div>
-</div>
 
-<div class="main_container">
-    <div class="panel_container">
-        <div class="sidenav">
-            <a href="#">Required Classes</a>
-            <div clas="required_course_section">
-                <ul>
-                    <li>Required Course</li>
-                    <li>Required Course</li>
-                    <li>etc</li>
-                    <li></li>
-                </ul>
+    <!-- PANEL CONTAINING ALL PANEL ELEMENTS-->
+    <div class="main_container">
+        <div class="panel_container">
+            <!-- LEFT SIDEBAR-->
+            <div class="sidenav">
+                <a href="#">Required Classes</a>
+                <div clas="required_course_section">
+                    <ul>
+                        <li>Required Course</li>
+                        <li>Required Course</li>
+                        <li>Required Course</li>
+                        <li>Required Course</li>
+                    </ul>
+                </div>
+                <div class="required_course_section">
+                    <p1>
+                        Total Credits:
+                    </p1>
+                </div>
             </div>
-            <div class="required_course_section">
-                <p1>
-                    Total Credits:
-                </p1>
+
+            <!-- COURSE CATALOG PANEL -->
+            <div class="panel1 resizable">
+                <p> <strong>Course Catalog</strong></p>
+                <div class="course_catalog">
+                    <fieldset>
+
+                        <label for="Filter Options">
+                            <legend>Search Criteria</legend>
+                            <div class="filter_names" margin-top="25px">
+                                <select name="filter" id="filter">
+                                    <option disabled Selected> Subject</option>
+                                    <option value="op2"> Filter 2</option>
+                                </select>
+
+                                <select name="filter1" id="filter">
+                                    <option disabled selected> Semester</option>
+                                    <option value="op4"> Spring</option>
+                                    <option value="op5"> Summer</option>
+                                    <option value="op6"> Fall</option>
+                                </select>
+
+                                <select name="filter2" id="filter">
+                                    <option disabled selected> Credits</option>
+                                    <option value="op8"> 0</option>
+                                    <option value="op9"> 3</option>
+                                    <option value="op10"> 4</option>
+                                </select>
+                            </div>
+                        </label>
+                    </fieldset>
+
+                    <!-- SEARCH AND SUBMIT -->
+                    <div class="selection_bar">
+                        <input type="text" id="search-input" placeholder="Search Course..." name="q" class="input"
+                            hx-trigger="keyup changed" hx-target="#search-results" hx-get="/search-form">
+                        <input type="submit" value="Submit" class="search_button" hx-get="/search-form">
+
+                    </div>
+                    <div id="search-results" div class="search_results">
+                        <table class="search_table">
+                            <thead>
+                                <tr>
+                                    <th>Course Name</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+                <script src="script.js"></script>
             </div>
-        </div>
 
-        <div class="panel1 resizable">
-            <p> <strong>Course Catalog</strong></p>
-            <div class="course_catalog">
-                <fieldset>
+            <!-- CALENDAR PANEL-->
+            <div class="panel2 resizable" id="panel2">
+                <p>Calendar</p>
+                <div class="calendarSelection">
+                    <legend>Enter Academic Year</legend>
+                    <div class="calendarInputs">
+                        <label for="startYear">Start: </label>
+                        <select name="startYear" id="startYear">
+                            <option value="select" disabled>Select</option>
+                        </select>
 
-                    <label for="Filter Options">
-                        <legend>Search Criteria</legend>
-                        <div class="filter_names" margin-top="25px">
-                            <select name="filter" id="filter">
-                                <option disabled Selected> Subject</option>
-                                <option value="op2"> Filter 2</option>
-                            </select>
-
-                            <select name="filter1" id="filter">
-                                <option disabled selected> Semester</option>
-                                <option value="op4"> Spring</option>
-                                <option value="op5"> Summer</option>
-                                <option value="op6"> Fall</option>
-                            </select>
-
-                            <select name="filter2" id="filter">
-                                <option disabled selected> Credits</option>
-                                <option value="op8"> 0</option>
-                                <option value="op9"> 3</option>
-                                <option value="op10"> 4</option>
-                            </select>
-                        </div>
-                    </label>
-                </fieldset>
-                <div class="selection_bar">
-                    <input type="text" id="search-input" placeholder="Search Course..." class="search_bar">
-                    <input type="submit" value="Submit" class="search_button">
+                        <label for="endYear">End: </label>
+                        <select name="endYear" id="endYear">
+                            <option value="select" disabled>Select</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="generate-section">
+                    <button onclick="generateSemesters()" class="generate-button">Generate Schedule</button>
+                </div>
+                <div class="generated-panel">
+                    <div id="generatedDivs"></div>
                 </div>
 
             </div>
-            <div id="results"></div>
-            <script src="script.js"></script>
-        </div>
-        <div class="panel2 resizable">
-            Calendar
-        </div>
-        <button class="add__semester" type="button">
-            ADD SEMESTER
-        </button>
-        <script>
-            $(document).ready(function () {
-                $(".resizable").resizable({
-                    handles: 'e, w',
-                    resize: function (event, ui) {
-                        var containerWidth = $(".main_container").width();
-                        var panel1Width = ui.size.width;
-                        var panel2Width = containerWidth - panel1Width;
 
-                        $(".panel1").css("width", panel1Width + "px");
-                        $(".panel2").css("width", panel2Width + "px");
-                    }
-                });
-            });
-        </script>
+            <!-- RIGHT SIDEBAR -->
+            <div class="extra_buttons">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#emailModal"
+                    hx-get="/email-form">
+                    Send Email
+                </button>
 
-    </div>
-</div>
-
-
-
-<div>
-    <nav aria-label="Main Menu" id="navBar"></nav>
-</div>
+                <!-- POPUP WINDOW FOr EMAIL-->
+                <div class="modal fade" id="emailModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true" hx-boost>
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Email Form</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body" hx-target="#emailModal .modal-body">
+                                <form action="/send-email" method="post">
+                                    <label for="to">To:</label>
+                                    <input type="email" id="to" name="to" required><br><br>
+                                    <label for="subject">Subject:</label>
+                                    <input type="text" id="subject" name="subject" required><br><br>
+                                    <label for="message">Message:</label><br>
+                                    <textarea id="message" name="message" rows="4" required></textarea><br><br>
+                                    <label for="attachment">Attachment:</label>
+                                    <input type="file" id="attachment" name="attachment"><br><br>
+                                    <label for="cc">CC:</label>
+                                    <input type="email" id="cc" name="cc"><br><br>
+                                    <button type="submit">Send</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 </body>
 
 </html>
