@@ -58,6 +58,7 @@ body {
 
 .sidenav li {
     color: white;
+    max-width: min-content;
 }
 
 .sidenav a {
@@ -104,35 +105,29 @@ body {
     overflow: hidden;
 }
 
-.panel1 {
+.panel1,
+.panel2,
+.panel3 {
     padding: 20px;
-    height: max-content;
-    width: 600px;
-    max-height: max-content;
     background-color: whitesmoke;
     box-shadow: 0 4px 8px rgba(red, green, blue, alpha);
+    min-height: fit-content;
     margin: 20px;
     border-radius: 10px;
     resize: both;
     overflow: auto;
     box-sizing: border-box;
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-    color: black;
 }
 
+.panel1,
 .panel2 {
-    padding: 20px;
-    height: 400px;
-    width: 800px;
-    max-height: max-content;
-    background-color: whitesmoke;
-    box-shadow: 0 4px 8px rgba(red, green, blue, alpha);
-    margin: 20px;
-    border-radius: 10px;
-    resize: both;
-    overflow: auto;
-    box-sizing: border-box;
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    width: calc(50% - 40px);
+}
+
+.panel3 {
+    height: calc(100% - 100px);
+    width: calc(100% - 40px);
 }
 
 .resizable {
@@ -147,7 +142,7 @@ body {
     margin-bottom: 10px;
 }
 
-.search_bar {
+.input {
     width: 100%;
     padding: 12px 20px;
     margin: 8px 0;
@@ -175,37 +170,105 @@ body {
     color: black;
 }
 
-.add__semester {
-    color: white;
-    background-color: #0A233f;
-    margin-left: auto;
-    position: absolute;
-    right: 10px;
-    float: right;
-    top: 0;
-    margin-top: 10px;
-    align-self: flex-end;
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-    max-width: min-content;
+.semester-box {
+    border: 1px solid #ccc;
     padding: 10px;
-    border-radius: 10px;
-    font-size: 10px;
-}
+    margin: 10px 0;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 
-.add__semester:hover {
-    background-color: lightgrey;
-    color: black;
 }
 
 
 legend {
     color: grey;
-    padding: 3px 6px;
+    font-size: 20px;
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
 
 fieldset {
     max-width: 100%;
-    padding: 16px;
-    color: white
+    color: black
+}
+
+.btn-primary {
+    background-color: #0A233f;
+    color: #fff;
+    border-color: black;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    margin-top: 25px;
+    font-size: 10px;
+    margin-left: auto;
+    position: absolute;
+    right: 10px;
+    float: right;
+    top: 0;
+    max-width: 80px;
+}
+
+
+
+.smaller-box {
+    background-color: white;
+    border: 1px solid #ccc;
+    border-color: black;
+    padding: 10px;
+    margin-bottom: 10px;
+    color: black;
+    max-width: min-content;
+}
+
+.extra_buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+.semester-box {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.remove-button {
+    color: grey;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    line-height: 20px;
+    cursor: pointer;
+
+}
+
+.generate-button {
+    background-color: #0A233f;
+    border-color: #0A233f;
+    color: white;
+    border-radius: 5px;
+    outline: none;
+    border: none;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 12px;
+    padding: 6px;
+    margin-top: 10px;
+}
+
+
+.panel2_content {
+    display: grid;
+    position: relative;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-gap: 10px;
+
+}
+
+.generated-panel {
+    overflow: auto;
+    overflow-x: hidden;
+    display: inline-flex;
+    flex-direction: column;
+    margin-top: 20px;
+    border: 2px solid #ccc;
+    padding: 5px;
 }
