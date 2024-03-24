@@ -7,11 +7,14 @@
     <title>Main Website</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="style.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://unpkg.com/htmx.org/dist/htmx.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
 
 </head>
 
@@ -43,7 +46,7 @@
             <!-- LEFT SIDEBAR-->
             <div class="sidenav">
                 <a href="#">Required Classes</a>
-                <div clas="required_course_section">
+                <div class="required_course_section">
                     <ul>
                         <li>Required Course</li>
                         <li>Required Course</li>
@@ -67,19 +70,19 @@
                         <label for="Filter Options">
                             <legend>Search Criteria</legend>
                             <div class="filter_names" margin-top="25px">
-                                <select name="filter" id="filter">
+                                <select name="filter" id="filter1">
                                     <option disabled Selected> Subject</option>
                                     <option value="op2"> Filter 2</option>
                                 </select>
 
-                                <select name="filter1" id="filter">
+                                <select name="filter1" id="filter2">
                                     <option disabled selected> Semester</option>
                                     <option value="op4"> Spring</option>
                                     <option value="op5"> Summer</option>
                                     <option value="op6"> Fall</option>
                                 </select>
 
-                                <select name="filter2" id="filter">
+                                <select name="filter2" id="filter3">
                                     <option disabled selected> Credits</option>
                                     <option value="op8"> 0</option>
                                     <option value="op9"> 3</option>
@@ -91,11 +94,27 @@
 
                     <!-- SEARCH AND SUBMIT -->
                     <div class="selection_bar">
-                        <input type="text" id="search-input" placeholder="Search Course..." class="search_bar">
-                        <input type="submit" value="Submit" class="search_button" onclick="searchCourses()">
+                        <form hx-post="/search" hx-target="#results">
+                            <input type="text" id="search-input" name="search_query" placeholder="Search Course..."
+                                class="search_bar">
+                            <button type="submit" class="search_button">Search</button>
+                        </form>
                     </div>
-                </div>
-                <div id="results"></div>
+                    <div id="results" class="search_results">
+                        <table class="search_table">
+                            <thead>
+                                <tr>
+                                    <th>Course Name</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Results will be dynamically inserted here -->
+                            </tbody>
+                        </table>
+                    </div><!--here-->
+
+                </div><!-- here-->
+                <script src="script.js"></script>
             </div>
 
             <!-- CALENDAR PANEL-->
@@ -131,7 +150,7 @@
                     Send Email
                 </button>
 
-                <!-- POPUP WINDOW FOr EMAIL-->
+                <!-- POPUP WINDOW FOR EMAIL-->
                 <div class="modal fade" id="emailModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                     aria-hidden="true" hx-boost>
                     <div class="modal-dialog" role="document">
@@ -161,26 +180,6 @@
                     </div>
                 </div>
             </div>
-        <script>
-        function searchCourses() {
-            var input, filter, catalog, courses, course, txtValue;
-            input = document.getElementById('search-input');
-            filter = input.value.toUpperCase();
-            catalog = document.querySelector('.course_catalog');
-            courses = catalog.getElementsByTagName('p');
 
-            for (var i = 0; i < courses.length; i++) {
-                course = courses[i];
-                txtValue = course.textContent || course.innerText;
-                if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                    course.style.display = '';
-                } else {
-                    course.style.display = 'none';
-                }
-            }
-        }
-    </script>
-            
-</body>
 
 </html>
