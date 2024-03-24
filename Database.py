@@ -1,7 +1,8 @@
 from sqlalchemy import create_engine, Column, Integer, String, Boolean, Text, ForeignKey, Table
 from sqlalchemy.orm import sessionmaker, declarative_base, relationship
+from sqlalchemy.exc import IntegrityError
 
-engine = create_engine('sqlite:///:memory:')
+engine = create_engine('sqlite:///my_database.db')
 Session = sessionmaker(bind=engine)
 Base = declarative_base()
 
@@ -77,8 +78,12 @@ for course_detail in course_details:
     session.add(c)
 
 for p in prereq_details:
-    p = association_table.insert().values(**p)
-    session.execute(p)
+    try:
+        p = association_table.insert().values(**p)
+        session.execute(p)
+        session.commit()
+    except IntegrityError:
+        session.rollback()
 
 session.commit()
 
