@@ -1,7 +1,34 @@
-{% for course in courses %}
-<tr>
-    <td>{{ course.class_id }}</td>
-    <td>{{ course.cname }}</td>
-    <td>{{ course.description }}</td>
-</tr>
-{% endfor %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+    <table>
+        <tr>
+            <th>Course ID</th>
+            <th>Course Name</th>
+            <th>Credit Hours</th>
+            <th>Description</th>
+        </tr>
+        {% for course in courses %}
+        <tr>
+            <td>{{ course.class_id }}</td>
+            <td>{{ course.cname }}</td>
+            <td>{{ course.credit_hrs }}</td>
+            <td>{{ course.description }}</td>
+            <td><button class="add-button" onclick="addCourse('{{ course.cname }}')">Add</button></td>
+        </tr>
+        {% endfor %}
+    </table>
+
+</body>
+
+</html>
