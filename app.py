@@ -4,6 +4,7 @@ from Database import Base, Course
 from sqlalchemy import create_engine 
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
+from flask_mail import Mail, Message
 import os 
 
 app = Flask(__name__)
@@ -13,30 +14,53 @@ engine = create_engine(DB_PATH)
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 
+app.config['MAIL_SERVER']='live.smtp.mailtrap.io'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USERNAME'] = 'api'
+app.config['MAIL_PASSWORD'] = '3f79243f5a1e151623852c1018bf9213'
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
 
+mail = Mail(app)
 
 @app.route('/')
 def index():
     return render_template('index.html')
        
+@app.route('/get-required-courses')
+def get_required_courses():
+    department = request.args.get('department')
+    if department == 'computer_science':
+        db_session = DBSession()
+        computer_science_courses = db_session.query(Course).all()
+        required_courses = [{'cname': course.cname, 'completed': course.completed} for course in computer_science_courses]
+        db_session.close()
+        return jsonify(required_courses)
+    else:
+        return jsonify([])
 
-@app.route('/add-box')
-def add_box():
-    return """
-    <div class="smaller-box">
-        THIS IS A SMALL BOX
-    </div>
-    """
 
-@app.route('/email-form')
-def email_form():
-    return render_template('email_form.html')
+@app.route('/add-course', methods=['POST'])
+def add_course():
+    try:
+        course_id = request.form['course_id']
+        course_name = request.form['course_name'] 
+        return jsonify(success=True, course_name=course_name)  
+    except Exception as e:
+        return jsonify(success=False, error=str(e))  
 
-@app.route('/send-email', methods=['POST'])
+
+@app.route('/send-email', methods=['GET','POST'])
 def send_email():
-    return "Email sent successfully"
+    message = Message(
+        subject='Hello',
+        recipients=['jirokuntivero@gmail.com'],
+        sender=('RJ from Mailtrap', 'mailtrap@demomailtrap.com'),
+    )
+    message.html = "<b> Hello UNF<\b>, sending you this email for my plan of study from <a href='https://google.com'>Flask app</a>, yuh"
+    mail.send(message)
 
-@app.route('/search', methods=['GET', 'POST'])
+    return "Message sent!"
 
 @app.route('/search', methods=['POST'])
 def search():
