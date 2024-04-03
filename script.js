@@ -1,34 +1,46 @@
+var completedCourses = [];
 
-function searchCourses() {
-    // Get the search term from the input field
-    var searchTerm = document.getElementById("search-input").value;
+function addCourse(courseName) {
+    // Check if the course is already in the completedCourses array
+    if (!completedCourses.includes(courseName)) {
+        // If not, add it to the array and append it to the list
+        completedCourses.push(courseName);
+        $('#completed-courses-list').append('<p>' + courseName + '</p>');
 
-    // Send an AJAX request to the Flask server
-    fetch('/search?term=' + searchTerm)
-        .then(response => response.json())
-        .then(data => {
-            // Clear previous search results
-            var searchResultsDiv = document.getElementById("search-results");
-            searchResultsDiv.innerHTML = '';
-
-            // Create HTML elements for each search result
-            data.forEach(course => {
-                var courseDiv = document.createElement("div");
-                courseDiv.textContent = course.class_id + ' - ' + course.cname;
-                searchResultsDiv.appendChild(courseDiv);
-            });
-        })
-        .catch(error => console.error('Error:', error));
+        // AJAX call to add the course
+        $.ajax({
+            url: '/add-course',
+            method: 'POST',
+            data: { course_name: courseName }, // Send the course name
+            success: function (response) {
+                console.log('Course added successfully:', response.course_name);
+                updateCompletedCoursesList();
+            },
+            error: function (xhr, status, error) {
+                console.error('Error adding course:', error);
+            }
+        });
+    } else {
+        // If it's already in the array, do nothing or show a message indicating it's already added
+        console.log(courseName + ' is already added to the list.');
+    }
 }
 
-function displaySearchResults(courses) {
-    const searchResultsDiv = document.getElementById('search_results');
-    searchResultsDiv.innerHTML = '';
-    courses.forEach(course => {
-        const courseItem = document.createElement('div');
-        courseItem.textContent = `${course.id}: ${course.name}`;
-        searchResultsDiv.appendChild(courseItem);
-    });
+function updateRequiredCoursesList(courses) {
+    var requiredCoursesList = $('#required-courses-list');
+    requiredCoursesList.empty();
+
+    if (courses.length > 0) {
+        courses.forEach(function (course) {
+            var courseItem = $('<li>' + course.cname + '</li>');
+            if (course.completed) {
+                courseItem.addClass('completed-course'); // Add completed class if the course is completed
+            }
+            requiredCoursesList.append(courseItem);
+        });
+    } else {
+        requiredCoursesList.append('<li>No required courses found.</li>');
+    }
 }
 
 function generateYears() {
@@ -82,3 +94,56 @@ function generateSemesters() {
     }
 }
 window.onload = generateYears;
+
+
+
+$(document).ready(function () {
+    // Event listener for major selection change
+    $('#major-select').change(function () {
+        var selectedMajor = $(this).val();
+        if (selectedMajor) {
+            fetchRequiredCourses(selectedMajor);
+        } else {
+            $('#required-courses-list').empty();
+        }
+    });
+
+    // Function to fetch required courses for the selected major
+    function fetchRequiredCourses(major) {
+        $.ajax({
+            url: '/get-required-courses',
+            method: 'GET',
+            data: { department: major }, // Ensure 'department' matches the parameter name in the Flask route
+            success: function (response) {
+                updateRequiredCoursesList(response);
+            },
+            error: function (xhr, status, error) {
+                console.error('Error fetching required courses:', error);
+            }
+        });
+    }
+
+    $(document).on('click', '.add-button', function () {
+        var courseId = $(this).data('course-id');
+        var courseName = $(this).data('course-name');
+        addCourse(courseId, courseName);
+        // Send a POST request to add the course
+        $.ajax({
+            url: '/add-course',
+            method: 'POST',
+            data: { course_id: courseId, course_name: courseName },
+            success: function (response) {
+                if (response.success) {
+                    console.log(courseName + ' added successfully.');
+                } else {
+                    console.error('Failed to add ' + courseName + '.');
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Error adding course:', error);
+            }
+        });
+    });
+});
+
+
