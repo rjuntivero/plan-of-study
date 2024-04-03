@@ -3,11 +3,13 @@ body {
     margin: 0;
     background-color: rgb(142, 144, 145);
     height: 100%;
+    overflow: hidden;
 }
 
 .banner {
     background: #0A233f;
     position: relative;
+    z-index: 2;
 }
 
 .banner__logo {
@@ -51,14 +53,27 @@ body {
 }
 
 .sidenav {
+    /* Styles for the sidebar */
+    position: fixed;
+    /* Fixed positioning to keep it stationary */
+    top: 40;
+    /* Position from the top of the viewport */
+    left: 0;
+    /* Position from the left of the viewport */
+    height: 100%;
+    /* Full height of the viewport */
+    width: 220px;
+    /* Width of the sidebar */
     background-color: rgb(15, 20, 30);
-    height: 100vh;
-    width: 160px;
+    z-index: 1;
+    /* Ensure sidebar appears above other elements */
 }
 
 .sidenav li {
     color: white;
     max-width: min-content;
+    position: sticky;
+    padding-left: none;
 }
 
 .sidenav a {
@@ -67,11 +82,14 @@ body {
     text-decoration: none;
     font-size: 15px;
     display: block;
-    margin-top: none;
+    margin-top: 20px;
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     background-color: rgb(109, 136, 162);
     align-items: center;
+    position: sticky;
+    top: 0;
 }
+
 
 .sidenav a:hover {
     color: lightblue;
@@ -79,11 +97,15 @@ body {
 
 .required_course_section {
     color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    margin-top: 10px;
+    margin-left: 10px;
 }
 
-.required_course_section {
+.required_course_section div {
     margin-top: 50px;
     margin-left: 10px;
+    padding: 10px;
 }
 
 .main_container {
@@ -92,6 +114,7 @@ body {
     position: relative;
     flex-direction: column;
     height: 100%;
+    padding-left: 220px;
 }
 
 .panel_container {
@@ -112,18 +135,16 @@ body {
     background-color: whitesmoke;
     box-shadow: 0 4px 8px rgba(red, green, blue, alpha);
     min-height: fit-content;
+    min-width: fit-content;
     margin: 20px;
     border-radius: 10px;
     resize: both;
     overflow: auto;
     box-sizing: border-box;
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    max-height: 100vh;
 }
 
-.panel1,
-.panel2 {
-    width: calc(50% - 40px);
-}
 
 .panel3 {
     height: calc(100% - 100px);
@@ -270,5 +291,81 @@ fieldset {
     flex-direction: column;
     margin-top: 20px;
     border: 2px solid #ccc;
-    padding: 5px;
+    padding: 10px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    overflow: auto;
+    margin-top: 10px;
+}
+
+
+th,
+td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    overflow: auto;
+    font-size: small;
+}
+
+th {
+    background-color: grey;
+}
+
+tr:hover {
+    background-color: #f5f5f5;
+}
+
+.completed-course {
+    color: green;
+    /* Change color as needed */
+}
+
+/* Adjust the width and other properties of the generated required courses list items */
+
+
+.required_course_section select {
+    width: 80%;
+    /* Set the width to fill the sidebar */
+    padding: 8px;
+    /* Add padding for better appearance */
+    margin-top: 10px;
+    /* Adjust margin for spacing */
+    box-sizing: border-box;
+    /* Include padding and border in the element's total width */
+    font-family: 'Arial', sans-serif;
+    /* Adjust font family if needed */
+    font-size: 14px;
+    /* Adjust font size if needed */
+}
+
+.required_course_section ul {
+    padding-left: 30px;
+    margin-top: 15px;
+    /* Remove default left padding */
+}
+
+.required_course_section li {
+    list-style-type: decimal;
+    /* Remove default list style */
+    padding-left: 10px;
+    font-size: small;
+    max-width: max-content;
+    /* Adjust the left padding as needed */
+}
+
+.required_course_section p {
+
+    margin-top: none;
+}
+
+.search-page {
+    display: none;
+}
+
+.search-page.active {
+    display: block;
 }
