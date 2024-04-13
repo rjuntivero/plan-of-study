@@ -42,12 +42,31 @@ def get_required_courses():
 
 @app.route('/add-course', methods=['POST'])
 def add_course():
-    try:
-        course_id = request.form['course_id']
-        course_name = request.form['course_name'] 
-        return jsonify(success=True, course_name=course_name)  
-    except Exception as e:
-        return jsonify(success=False, error=str(e))  
+    if request.method == 'POST':
+        try:
+            course_id = request.form['course_id']
+            course_name = request.form['course_name']
+            
+            db_sesh = DBSession()
+            
+            # Fetch the course to be updated
+            course_to_update = db_sesh.query(Course).filter_by(class_id=course_id).first()
+            
+            # Update the completed attribute to True
+            course_to_update.completed = True
+            
+            # Commit the changes to the database
+            db_sesh.commit()
+            
+            # Close the session
+            db_sesh.close()
+            
+            # Redirect back to the same page
+            return redirect(request.referrer)
+        
+        except Exception as e:
+            # Handle the exception, optionally log it
+            return redirect(request.referrer)
 
 
 @app.route('/send-email', methods=['GET','POST'])
