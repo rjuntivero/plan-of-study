@@ -6,17 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Results</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
-
 </head>
 
 <body>
-
     <table>
         <tr>
             <th>Course ID</th>
             <th>Course Name</th>
             <th>Credit Hours</th>
             <th>Description</th>
+            <th>Action</th>
         </tr>
         {% for course in courses %}
         <tr>
@@ -24,11 +23,17 @@
             <td>{{ course.cname }}</td>
             <td>{{ course.credit_hrs }}</td>
             <td>{{ course.description }}</td>
-            <td><button class="add-button" onclick="addCourse('{{ course.cname }}')">Add</button></td>
+            <td>
+                <form action="/add-course" method="POST">
+                    <input type="hidden" name="course_id" value="{{ course.class_id }}">
+                    <input type="hidden" name="course_name" value="{{ course.cname }}">
+                    <button type="button" class="add-button">Add</button>
+                </form>
+            </td>
         </tr>
         {% endfor %}
     </table>
-
 </body>
 
 </html>
+
