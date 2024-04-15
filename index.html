@@ -77,33 +77,33 @@
                         <label for="Filter Options">
                             <legend>Search Criteria</legend>
                             <div class="filter_names" margin-top="25px">
-                                <select name="filter" id="filter1">
+                                <select name="filter1" id="filter1" onchange="updateSearchResults()">
                                     <option> Subject</option>
-                                    <option value="sub1"> CAI</option>
-                                    <option value="sub2"> CAP</option>
-                                    <option value="sub3"> CDA</option>
-                                    <option value="sub4"> CEN</option>
-                                    <option value="sub5"> CGS</option>
-                                    <option value="sub6"> CIS</option>
-                                    <option value="sub7"> CNT</option>
-                                    <option value="sub8"> COP</option>
-                                    <option value="sub9"> COT</option>
-                                    <option value="sub10"> IDC</option>
-                                    <option value="sub11"> MAC</option>
-                                    <option value="sub12"> MAS</option>
-                                    <option value="sub13"> SLS</option>
-                                    <option value="sub14"> SPC</option>
-                                    <option value="sub15"> STA</option>
+                                    <option value="CAI"> CAI</option>
+                                    <option value="CAP"> CAP</option>
+                                    <option value="CDA"> CDA</option>
+                                    <option value="CEN"> CEN</option>
+                                    <option value="CGS"> CGS</option>
+                                    <option value="CIS"> CIS</option>
+                                    <option value="CNT"> CNT</option>
+                                    <option value="COP"> COP</option>
+                                    <option value="COT"> COT</option>
+                                    <option value="IDC"> IDC</option>
+                                    <option value="MAC"> MAC</option>
+                                    <option value="MAS"> MAS</option>
+                                    <option value="SLS"> SLS</option>
+                                    <option value="SPC"> SPC</option>
+                                    <option value="STA"> STA</option>
                                 </select>
 
-                                <select name="filter1" id="filter2">
+                                <select name="filter2" id="filter2" onchange="updateSearchResults()">
                                     <option> Semester</option>
-                                    <option value="op4"> Spring</option>
-                                    <option value="op5"> Summer</option>
-                                    <option value="op6"> Fall</option>
+                                    <option value="Spring"> Spring</option>
+                                    <option value="Summer"> Summer</option>
+                                    <option value="Fall"> Fall</option>
                                 </select>
 
-                                <select name="filter2" id="filter3">
+                                <select name="filter3" id="filter3" onchange="updateSearchResults()">
                                     <option> Credits</option>
                                     <option value="op8"> 0</option>
                                     <option value="op9"> 3</option>
@@ -115,10 +115,13 @@
 
                     <!-- SEARCH AND SUBMIT -->
                     <div class="selection_bar">
-                        <form hx-post="/search" hx-target="#results">
+                        <form id="searchForm" hx-post="/search" hx-target="#results">
                             <input type="text" id="search-input" name="search_query" placeholder="Search Course..."
                                 class="search_bar">
                             <button type="submit" class="search_button">Search</button>
+                            <input type="hidden" name="filter1" id="hidden-filter1" value="">
+                            <input type="hidden" name="filter2" id="hidden-filter2" value="">
+                            <input type="hidden" name="filter3" id="hidden-filter3" value="">
                         </form>
                     </div>
                     <div id="results" class="search_results">
@@ -220,7 +223,7 @@
                         <div class="modal-body" hx-target="#posModal .modal-body">
                             <!-- Content for generating Plan of Study -->
                             <form id="pdfForm" action="/generate_pdf" method="post" target="_blank">
-                                <label for="year">Year:</label>
+                                <label for="year">Classification:</label>
                                 <select name="year" id="year">
                                     <option value="1">Freshman</option>
                                     <option value="2">Sophomore</option>
