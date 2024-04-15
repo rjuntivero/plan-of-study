@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, send_file, Blueprint, jsonify, Response, make_response
+from flask import Flask, render_template, request, send_file, Blueprint, jsonify, Response, make_response, redirect
 from flask_sqlalchemy import SQLAlchemy
 from Database import Base, Course
 from sqlalchemy import create_engine
