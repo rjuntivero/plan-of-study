@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, Column, Integer, String, Boolean, Text, Fo
 from sqlalchemy.orm import sessionmaker, declarative_base, relationship
 from sqlalchemy.exc import IntegrityError
 
-engine = create_engine('sqlite:///my_database.db')
+engine = create_engine('sqlite:///:memory:')
 Session = sessionmaker(bind=engine)
 Base = declarative_base()
 
