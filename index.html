@@ -28,7 +28,7 @@
                     height="100px">
             </div>
             <div class="banner__title">
-                School of Computing - <strong>PLAN OF STUDY</strong>
+                <img src="{{ url_for('static', filename='images/Banner.png') }}" alt="Banner">
             </div>
             <div class="banner__options">
                 <button class="banner__options" type="button">
@@ -48,6 +48,10 @@
             <select name="majorDropdown" id="major-select">
                 <option value="Select" disabled selected>Select</option>
                 <option value="computer_science">Computer Science</option>
+                <option value="data_science">Data Science</option>
+                <option value="information_systems">Information Systems</option>
+                <option value="information_science">Information Science</option>
+                <option value="information_technology">Information Technology</option>
             </select>
             <ul id="required-courses-list">
 
@@ -74,19 +78,33 @@
                             <legend>Search Criteria</legend>
                             <div class="filter_names" margin-top="25px">
                                 <select name="filter" id="filter1">
-                                    <option disabled Selected> Subject</option>
-                                    <option value="op2"> Filter 2</option>
+                                    <option> Subject</option>
+                                    <option value="sub1"> CAI</option>
+                                    <option value="sub2"> CAP</option>
+                                    <option value="sub3"> CDA</option>
+                                    <option value="sub4"> CEN</option>
+                                    <option value="sub5"> CGS</option>
+                                    <option value="sub6"> CIS</option>
+                                    <option value="sub7"> CNT</option>
+                                    <option value="sub8"> COP</option>
+                                    <option value="sub9"> COT</option>
+                                    <option value="sub10"> IDC</option>
+                                    <option value="sub11"> MAC</option>
+                                    <option value="sub12"> MAS</option>
+                                    <option value="sub13"> SLS</option>
+                                    <option value="sub14"> SPC</option>
+                                    <option value="sub15"> STA</option>
                                 </select>
 
                                 <select name="filter1" id="filter2">
-                                    <option disabled selected> Semester</option>
+                                    <option> Semester</option>
                                     <option value="op4"> Spring</option>
                                     <option value="op5"> Summer</option>
                                     <option value="op6"> Fall</option>
                                 </select>
 
                                 <select name="filter2" id="filter3">
-                                    <option disabled selected> Credits</option>
+                                    <option> Credits</option>
                                     <option value="op8"> 0</option>
                                     <option value="op9"> 3</option>
                                     <option value="op10"> 4</option>
@@ -149,37 +167,128 @@
                     hx-get="/email-form">
                     Send Email
                 </button>
+                <button type="button" class="btn btn-primary2" data-toggle="modal" data-target="#posModal"
+                    hx-get="/pos-form">
+                    Generate Plan of Study
+                </button>
+                <button type="button" class="btn btn-primary3" data-toggle="modal" data-target="#helpModal">
+                    Help
+                </button>
+            </div>
 
-                <!-- POPUP WINDOW FOR EMAIL-->
-                <div class="modal fade" id="emailModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-                    aria-hidden="true" hx-boost>
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">Email Form</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body" hx-target="#emailModal .modal-body">
-                                <form action="/send-email" method="post">
-                                    <label for="to">To:</label>
-                                    <input type="email" id="to" name="to" required><br><br>
-                                    <label for="subject">Subject:</label>
-                                    <input type="text" id="subject" name="subject"><br><br>
-                                    <label for="message">Message:</label><br>
-                                    <textarea id="message" name="message" rows="4"></textarea><br><br>
-                                    <label for="attachment">Attachment:</label>
-                                    <input type="file" id="attachment" name="attachment"><br><br>
-                                    <label for="cc">CC:</label>
-                                    <input type="email" id="cc" name="cc"><br><br>
-                                    <button type="submit">Send</button>
-                                </form>
-                            </div>
+            <!-- POPUP WINDOW FOR EMAIL-->
+            <div class="modal fade" id="emailModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                aria-hidden="true" hx-boost>
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Email Form</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body" hx-target="#emailModal .modal-body">
+                            <form action="/send-email" method="post">
+                                <label for="to">To:</label>
+                                <input type="email" id="to" name="to" required><br><br>
+                                <label for="subject">Subject:</label>
+                                <input type="text" id="subject" name="subject"><br><br>
+                                <label for="message">Message:</label><br>
+                                <textarea id="message" name="message" rows="4"></textarea><br><br>
+                                <label for="attachment">Attachment:</label>
+                                <input type="file" id="attachment" name="attachment"><br><br>
+                                <label for="cc">CC:</label>
+                                <input type="email" id="cc" name="cc"><br><br>
+                                <button type="submit">Send</button>
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- POPUP WINDOW FOR PLAN OF STUDY -->
+            <div class="modal fade" id="posModal" tabindex="-1" role="dialog" aria-labelledby="posModalLabel"
+                aria-hidden="true" hx-boost>
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="posModalLabel">Plan of Study</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body" hx-target="#posModal .modal-body">
+                            <!-- Content for generating Plan of Study -->
+                            <form id="pdfForm" action="/generate_pdf" method="post" target="_blank">
+                                <label for="year">Year:</label>
+                                <select name="year" id="year">
+                                    <option value="1">Freshman</option>
+                                    <option value="2">Sophomore</option>
+                                    <option value="3">Junior</option>
+                                    <option value="4">Senior</option>
+                                </select><br><br>
+                                <label for="advisor">Advisor:</label>
+                                <input type="text" id="advisor" name="advisor" required><br><br>
+                                <!-- Additional fields for generating Plan of Study can be added here -->
+                                <button type="submit" onclick="generatePlanOfStudy()">Generate POS</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--Help POPUP Window-->
+            <div class="modal fade" id="helpModal" tabindex="-1" role="dialog" aria-labelledby="helpModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="helpModalLabel">How to Use the Plan of Study</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Add your help content here -->
+                            <h6>Welcome to the Plan of Study WebApp for the School of Computing</h6>
+                            <h6><strong>Overview:</strong></h6>
+                            <p>This WebApp was desgined to streamline the Plan of Study creation process for College of
+                                Computing Students. Here, students can input their relevant academic information/history
+                                to automatically generate a Plan of Study form that they can email to their advisor.
+                            </p>
+                            <h6><strong>Select Major:</strong></h6>
+                            <p>A list of all required Core Courses for the major selected in the
+                                dropdown box will be displayed
+                            </p>
+                            <h6><strong>Course Catalog:</strong></h6>
+                            <p>This course catalog contains all relevant courses for Computing Majors. Searching through
+                                the catalog yields a class' relevant information along with an "Add" button. The "Add"
+                                button is used to add the course to a list of courses that have already been completed.
+                                Search Filters may be applied using the dropdowns above to limit
+                                search results.
+                            </p>
+                            <h6><strong>Calendar:</strong></h6>
+                            <p>The Calendar is used in determining which academic semesters to include/exclude from the
+                                generated Plan of Study. The Start
+                                and End dropdowns indicate admission year and graduation year respectively. After
+                                generating relevant academic years,
+                                students may choose to exclude semesters they will not be taking by clicking the "X"
+                                next to the semester.
+                            </p>
+                            <h6><strong>Send Email:</strong></h6>
+                            <p>A Plan of Study form may be emailed to an advisor by inputting the relevant information
+                            </p>
+                            <h6><strong>Generate Plan of Study:</strong></h6>
+                            <p>Used to generate Plan of Study form after all preceding fields have been filled out
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
 
 
 </html>
