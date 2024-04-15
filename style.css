@@ -3,19 +3,26 @@ body {
     margin: 0;
     background-color: rgb(142, 144, 145);
     height: 100%;
-    overflow: hidden;
+    overflow: auto;
 }
 
 .banner {
     background: #0A233f;
-    position: relative;
+    position: fixed;
     z-index: 2;
+    left: 0;
+    right: 0;
+    box-shadow: 2px 2px 5px;
+    border-color: white;
+    border-style: solid;
+    border-width: thin;
 }
 
 .banner__logo {
     height: auto;
     margin-right: 0px;
     margin-left: 0px;
+    overflow: hidden;
 }
 
 .banner__content {
@@ -29,10 +36,6 @@ body {
 }
 
 .banner__title {
-    flex-grow: 1 auto;
-    font-size: 50px;
-    font-family: 'Times New Roman', Times, serif;
-    color: white;
     display: inline-block;
     margin-left: auto;
 }
@@ -56,7 +59,7 @@ body {
     /* Styles for the sidebar */
     position: fixed;
     /* Fixed positioning to keep it stationary */
-    top: 40;
+    top: 200;
     /* Position from the top of the viewport */
     left: 0;
     /* Position from the left of the viewport */
@@ -67,6 +70,7 @@ body {
     background-color: rgb(15, 20, 30);
     z-index: 1;
     /* Ensure sidebar appears above other elements */
+    padding-top: 140px;
 }
 
 .sidenav li {
@@ -115,6 +119,8 @@ body {
     flex-direction: column;
     height: 100%;
     padding-left: 220px;
+    padding-top: 140px;
+    top: 70;
 }
 
 .panel_container {
@@ -133,7 +139,7 @@ body {
 .panel3 {
     padding: 20px;
     background-color: whitesmoke;
-    box-shadow: 0 4px 8px rgba(red, green, blue, alpha);
+    box-shadow: 2px 1px 10px #0A233f;
     min-height: fit-content;
     min-width: fit-content;
     margin: 20px;
@@ -143,6 +149,12 @@ body {
     box-sizing: border-box;
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
     max-height: 100vh;
+    border-color: green;
+    border-style: 2px solid;
+}
+
+.panel1 {
+    width: 2700px
 }
 
 
@@ -155,7 +167,6 @@ body {
     flex-grow: 0.5;
     min-width: 0;
     overflow: auto;
-    border: 1px solid #ccc;
     max-height: 90%;
 }
 
@@ -186,7 +197,8 @@ body {
     cursor: pointer;
 }
 
-.search_button:hover {
+.search_button:hover,
+.generate-button:hover {
     background-color: lightgrey;
     color: black;
 }
@@ -219,14 +231,43 @@ fieldset {
     margin-top: 25px;
     font-size: 10px;
     margin-left: auto;
-    position: absolute;
     right: 10px;
-    float: right;
     top: 0;
     max-width: 80px;
 }
 
+.btn-primary2 {
+    background-color: #0A233f;
+    color: #fff;
+    border-color: black;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    margin-top: 25px;
+    font-size: 10px;
+    margin-left: auto;
+    right: 10px;
+    top: 30;
+    max-width: 80px;
+}
 
+.btn-primary:hover,
+.btn-primary2:hover {
+    background-color: #1273fc;
+    color: white;
+}
+
+.btn-primary3 {
+    background-color: #0A233f;
+    color: #fff;
+    border-color: black;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    margin-top: 600px;
+    border-radius: 50px;
+    font-size: 10px;
+    margin-left: auto;
+    right: 10px;
+    top: auto;
+    max-width: 80px;
+}
 
 .smaller-box {
     background-color: white;
@@ -240,8 +281,12 @@ fieldset {
 
 .extra_buttons {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: flex-start;
+    padding-top: 160px;
+    padding: 0 20px;
+    position: fixed;
+    right: 0;
 }
 
 .semester-box {
