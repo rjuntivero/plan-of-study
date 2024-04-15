@@ -225,6 +225,35 @@ $(document).ready(function () {
 
     // Trigger form submission when the "Generate PDF" button is clicked
     $('#pdfForm').submit();
+
+    $(document).on('click', '.add-button', function () {
+        var courseId = $(this).closest('form').find('input[name="course_id"]').val();
+        var courseName = $(this).closest('form').find('input[name="course_name"]').val();
+        
+        // Check if the course is already added
+        if (!completedCourses.includes(courseId)) {
+            // If not, add it to the array and append it to the list
+            completedCourses.push(courseId);
+            $('#completed-courses-list').append('<p>' + courseName + '</p>');
+        
+            // AJAX call to add the course
+            $.ajax({
+                url: '/add-course',
+                method: 'POST',
+                data: { course_id: courseId, course_name: courseName },
+                success: function (response) {
+                    console.log('Course added successfully:', response.course_name);
+                    updateCompletedCoursesList();
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error adding course:', error);
+                }
+            });
+        } else {
+            // If it's already in the array, do nothing or show a message indicating it's already added
+            console.log(courseName + ' is already added to the list.');
+        }
+    });
 });
 function generatePlanOfStudy() {
     // Retrieve the selected year and advisor name from the form
