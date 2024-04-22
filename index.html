@@ -18,8 +18,8 @@
 
 </head>
 
-<body>
-
+<body class="dark-mode">
+    <div id="alert" class="alert" style="display: none;"></div>
     <!-- TOP BANNER-->
     <div class="banner">
         <div class="banner__content">
@@ -61,6 +61,23 @@
             Total Credits: <strong>120</strong>
 
         </div>
+        <div class="progress-container">
+            <svg class="progress-ring" width="200" height="200">
+                <!-- Outer circle -->
+                <circle class="progress-ring-circle" fill="transparent" stroke="white" stroke-width="10" cx="70" cy="70"
+                    r="65">
+                </circle>
+                <!-- Inner circle indicating progress -->
+                <circle class="progress-ring-circle-progress" fill="transparent" stroke="green" stroke-width="10"
+                    cx="70" cy="70" r="65"></circle>
+            </svg>
+            <div class="progress-text">0%</div>
+            <div class="status-text-container">
+                <p id="status-text"></p>
+            </div>
+        </div>
+
+
     </div>
 
     <!-- PANEL CONTAINING ALL PANEL ELEMENTS-->
@@ -73,11 +90,11 @@
                 <p> <strong>Course Catalog</strong></p>
                 <div class="course_catalog">
                     <fieldset>
-
                         <label for="Filter Options">
                             <legend>Search Criteria</legend>
                             <div class="filter_names" margin-top="25px">
-                                <select name="filter1" id="filter1" onchange="updateSearchResults()">
+                                <select name="filter1" id="filter1" onchange="updateSearchResults()"
+                                    class="filter-dropdown">
                                     <option> Subject</option>
                                     <option value="CAI"> CAI</option>
                                     <option value="CAP"> CAP</option>
@@ -96,19 +113,17 @@
                                     <option value="STA"> STA</option>
                                 </select>
 
-                                <select name="filter2" id="filter2" onchange="updateSearchResults()">
+                                <select name="filter2" id="filter2" onchange="updateSearchResults()"
+                                    class="filter-dropdown">
                                     <option> Semester</option>
                                     <option value="Spring"> Spring</option>
                                     <option value="Summer"> Summer</option>
                                     <option value="Fall"> Fall</option>
                                 </select>
 
-                                <select name="filter3" id="filter3" onchange="updateSearchResults()">
-                                    <option> Credits</option>
-                                    <option value="op8"> 0</option>
-                                    <option value="op9"> 3</option>
-                                    <option value="op10"> 4</option>
-                                </select>
+                                <input type="text" name="filter3" id="filter3" onchange="updateSearchResults()"
+                                    placeholder="Course Number">
+                                </input>
                             </div>
                         </label>
                     </fieldset>
@@ -134,9 +149,21 @@
                             </tbody>
                         </table>
                     </div>
+                    <!-- Tab Dropdown -->
+                    <div class="tab">
+                        <button class="tablinks" onclick="openTab(event, 'CompletedCourses')">Completed Courses</button>
+                    </div>
 
+                    <!-- Content for Completed Courses Tab -->
+                    <div id="CompletedCourses" class="tabcontent">
+                        <ul id="completed-courses-list">
+                            <!-- This list will be filled with completed courses -->
+                        </ul>
+                    </div>
                 </div>
             </div>
+
+
 
             <!-- CALENDAR PANEL-->
             <div class="panel2 resizable" id="panel2">
@@ -145,12 +172,12 @@
                     <legend>Enter Academic Year</legend>
                     <div class="calendarInputs">
                         <label for="startYear">Start: </label>
-                        <select name="startYear" id="startYear">
+                        <select name="startYear" id="startYear" class="filter-dropdown">
                             <option value="select" disabled>Select</option>
                         </select>
 
                         <label for="endYear">End: </label>
-                        <select name="endYear" id="endYear">
+                        <select name="endYear" id="endYear" class="filter-dropdown">
                             <option value="select" disabled>Select</option>
                         </select>
                     </div>
@@ -223,15 +250,18 @@
                         <div class="modal-body" hx-target="#posModal .modal-body">
                             <!-- Content for generating Plan of Study -->
                             <form id="pdfForm" action="/generate_pdf" method="post" target="_blank">
-                                <label for="year">Classification:</label>
+                                <!--<label for="year">Classification:</label>
                                 <select name="year" id="year">
                                     <option value="1">Freshman</option>
                                     <option value="2">Sophomore</option>
                                     <option value="3">Junior</option>
                                     <option value="4">Senior</option>
-                                </select><br><br>
-                                <label for="advisor">Advisor:</label>
-                                <input type="text" id="advisor" name="advisor" required><br><br>
+                                </select><br><br>-->
+                                <label for="Name">Name:</label>
+                                <input type="text" id="Name" name="NameField" required><br><br>
+                                <label for="Name">N#:</label>
+                                <input type="text" id="N-Number" name="N-Number" required><br><br>
+
                                 <!-- Additional fields for generating Plan of Study can be added here -->
                                 <button type="submit" onclick="generatePlanOfStudy()">Generate POS</button>
                             </form>
