@@ -6,6 +6,10 @@ body {
     overflow: auto;
 }
 
+.light-mode {
+    background-color: white;
+}
+
 .banner {
     background: #0A233f;
     position: fixed;
@@ -112,6 +116,13 @@ body {
     padding: 10px;
 }
 
+#required-courses-list {
+    max-height: 400px;
+    /* Set a maximum height for the container */
+    overflow-y: auto;
+    /* Enable vertical scrolling if the content exceeds the maximum height */
+}
+
 .main_container {
     display: flex;
     align-items: flex-start;
@@ -154,7 +165,7 @@ body {
 }
 
 .panel1 {
-    width: 2700px
+    width: 2400px
 }
 
 
@@ -195,6 +206,11 @@ body {
     border: none;
     border-radius: 4px;
     cursor: pointer;
+}
+
+.search_results {
+    overflow: auto;
+    max-height: 400px;
 }
 
 .search_button:hover,
@@ -251,7 +267,7 @@ fieldset {
 
 .btn-primary:hover,
 .btn-primary2:hover {
-    background-color: #1273fc;
+    background-color: rgb(109, 136, 162);
     color: white;
 }
 
@@ -356,8 +372,12 @@ td {
     font-size: small;
 }
 
-th {
+.dark-mode th {
     background-color: grey;
+}
+
+.light-mode th {
+    background-color: whitesmoke;
 }
 
 tr:hover {
@@ -413,4 +433,170 @@ tr:hover {
 
 .search-page.active {
     display: block;
+}
+
+.dark-mode input#filter3 {
+    /* Add your styling properties here */
+    width: 115px;
+    /* Example: Set width */
+    padding: 1px;
+    /* Example: Add padding */
+    border: 1px solid #ccc;
+    /* Example: Add border */
+    border-radius: 10px;
+    font-size: 15px;
+    background-color: rgb(181, 181, 181);
+    /* Example: Add border radius */
+    /* Add more styles as needed */
+}
+
+.light-mode input#filter3 {
+    /* Add your styling properties here */
+    width: 115px;
+    /* Example: Set width */
+    padding: 1px;
+    /* Example: Add padding */
+    border: 1px solid #ccc;
+    /* Example: Add border */
+    border-radius: 10px;
+    font-size: 15px;
+    background-color: white;
+    /* Example: Add border radius */
+    /* Add more styles as needed */
+}
+
+input#filter3::placeholder {
+    color: #0A233f;
+}
+
+.dark-mode .filter-dropdown {
+    width: 95px;
+    padding: 1px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    color: #0A233f;
+    background-color: rgb(181, 181, 181);
+}
+
+.light-mode .filter-dropdown {
+    width: 95px;
+    padding: 1px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    color: #0A233f;
+    background-color: white;
+}
+
+li.completed-course {
+    color: lightgreen;
+}
+
+.tablinks {
+    margin-top: 20px;
+}
+
+/* Results table Add Buttons*/
+.add-button {
+    background-color: #4CAF50;
+    /* Green background */
+    border: none;
+    color: white;
+    /* White text */
+    padding: 10px 20px;
+    /* Padding */
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+    /* Rounded corners */
+}
+
+/* CSS for the "Add" button when hovered over */
+.add-button:hover {
+    background-color: rgb(109, 136, 162);
+    /* Darker green background on hover */
+}
+
+.add-button.clicked {
+    animation: changeColor 0.5s;
+    /* Light green background when clicked */
+}
+
+@keyframes changeColor {
+    0% {
+        background-color: #0A233f;
+    }
+
+    100% {
+        background-color: #4CAF50;
+    }
+}
+
+/*alert box for add course*/
+.alert {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #f2f2f2;
+    color: #333;
+    padding: 10px 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+}
+
+.success {
+    color: green;
+}
+
+.error {
+    color: red;
+}
+
+/* progress bar */
+/* progress bar */
+.progress-container {
+    position: absolute;
+    bottom: 110px;
+    width: 140px;
+    /* Adjusted width */
+    height: 140px;
+    /* Adjusted height */
+    margin-left: 40px;
+}
+
+.progress-ring {
+    transform: rotate(-90deg);
+}
+
+.progress-ring-circle {
+    transition: stroke-dashoffset 0.35s;
+}
+
+.progress-ring-circle-progress {
+    stroke-dasharray: 408.41;
+    /* Adjusted circumference (2 * π * r) */
+    stroke-dashoffset: 408.41;
+    /* Full circumference */
+    transition: stroke-dashoffset 0.35s;
+}
+
+.progress-text {
+    position: absolute;
+    top: 90%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+}
+
+.status-text-container {
+    text-align: center;
+    color: white;
+    margin-top: 10px;
+    white-space: nowrap;
+    /* Adjust margin as needed */
 }
