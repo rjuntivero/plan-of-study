@@ -6,16 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Results</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
 </head>
 
 <body>
+    {% if default_message %}
+    <!-- Display default message if no courses found -->
+    <p>{{ default_message }}</p>
+    {% else %}
     <table>
         <tr>
             <th>Course ID</th>
             <th>Course Name</th>
             <th>Credit Hours</th>
             <th>Description</th>
-            <th>Action</th>
         </tr>
         {% for course in courses %}
         <tr>
@@ -33,7 +38,20 @@
         </tr>
         {% endfor %}
     </table>
+    {% endif %}
+
+    <script>
+        $(document).ready(function () {
+            $('.add-button').click(function () {
+                var button = $(this);
+                button.addClass('clicked');
+                setTimeout(function () {
+                    button.removeClass('clicked');
+                }, 1000);
+            });
+        });
+    </script>
+
 </body>
 
 </html>
-
