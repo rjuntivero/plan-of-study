@@ -1,35 +1,6 @@
 var completedCourses = [];
-
-//OUTDATED
-function addCourse(courseId, courseName) {
-    // Check if the course is already in the completedCourses array
-    if (!completedCourses.includes(courseName)) {
-        // If not, add it to the array and append it to the list
-        completedCourses.push(courseName);
-        $('#completed-courses-list').append('<p>' + courseName + '</p>');
-
-        // AJAX call to add the course
-        $.ajax({
-            url: '/add-course',
-            method: 'POST',
-            data: { course_id: courseId, course_name: courseName }, // Send both course ID and name
-            success: function (response) {
-                if (response.success) {
-                    console.log('Course added successfully:', response.message); // Log the message
-                    updateRequiredCoursesList();
-                } else {
-                    console.error('Failed to add ' + courseName + '.');
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error('Error adding course:', error);
-            }
-        });
-    } else {
-        // If it's already in the array, do nothing or show a message indicating it's already added
-        console.log(courseName + ' is already added to the list.');
-    }
-}
+var selectedMajor;
+var removeButtons = [];
 
 document.addEventListener('DOMContentLoaded', function () {
     // Add event listener to your button with the class "add-button"
@@ -206,6 +177,89 @@ function updateRequiredCoursesList(courses) {
     }
 }
 
+// Function to fetch required courses for the selected major
+function fetchRequiredCourses(major) {
+    console.log("Selected Major:", major);
+    $.ajax({
+        url: '/get-required-courses',
+        method: 'GET',
+        data: { department: major }, // Ensure 'department' matches the parameter name in the Flask route
+        success: function (response) {
+            updateRequiredCoursesList(response);
+            updateProgressBar(completedCourses.length, response.length)//Update Progress Bar
+            updateStatusText(completedCourses.length, response.length);
+        },
+        error: function (xhr, status, error) {
+            console.error('Error fetching required courses:', error);
+        }
+    });
+}
+
+// Function to update the progress bar
+function updateProgressBar(completedCoursesCount, totalCoursesCount) {
+    var completionPercentage = (completedCoursesCount / totalCoursesCount) * 100;
+    var circle = document.querySelector('.progress-ring-circle-progress');
+    var radius = circle.r.baseVal.value;
+    var circumference = radius * 2 * Math.PI;
+    var offset = circumference - completionPercentage / 100 * circumference;
+
+    circle.style.strokeDashoffset = offset;
+
+    // Define color thresholds and corresponding colors
+    var color1 = '#FF6347'; // Red
+    var color2 = '#FFD700'; // Yellow
+    var color3 = '#32CD32'; // Green
+
+    // Calculate color based on completion percentage
+    var strokeColor;
+    if (completionPercentage < 50) {
+        // Linear interpolation between color1 and color2
+        var interpolationFactor = completionPercentage / 50; // Range from 0 to 1
+        strokeColor = interpolateColors(color1, color2, interpolationFactor);
+    } else {
+        // Linear interpolation between color2 and color3
+        var interpolationFactor = (completionPercentage - 50) / 50; // Range from 0 to 1
+        strokeColor = interpolateColors(color2, color3, interpolationFactor);
+    }
+
+    // Update the stroke color
+    circle.style.stroke = strokeColor;
+    document.querySelector('.progress-text').textContent = completionPercentage.toFixed(2) + '%'; // Display with two decimal places
+}
+
+// Function to interpolate between two colors
+function interpolateColors(color1, color2, factor) {
+    if (factor === undefined) factor = 0.5;
+    var result = color1.slice();
+    for (var i = 1; i < 7; i += 2) {
+        // Parse the integer values of the two colors
+        var v1 = parseInt(color1.substr(i, 2), 16);
+        var v2 = parseInt(color2.substr(i, 2), 16);
+
+        // Interpolate the color component
+        var v = Math.round(v1 + (v2 - v1) * factor);
+
+        // Convert it back to hexadecimal and update the result
+        result = result.substr(0, i) + v.toString(16).padStart(2, '0') + result.substr(i + 2);
+    }
+    return result;
+}
+
+function updateStatusText(completedCoursesCount, totalCoursesCount) {
+    var completionPercentage = (completedCoursesCount / totalCoursesCount) * 100;
+    var statusText = document.getElementById('status-text');
+
+    if (completionPercentage >= 75) {
+        statusText.textContent = 'Status: Good Standing';
+        statusText.style.color = 'lightgreen';
+    } else if (completionPercentage >= 50) {
+        statusText.textContent = 'Status: On Track';
+        statusText.style.color = 'yellow';
+    } else {
+        statusText.textContent = 'Status: Insufficient';
+        statusText.style.color = 'red';
+    }
+}
 //Required Courses Dropdown function
 $(document).ready(function () {
     // Event listener for major selection change
@@ -217,89 +271,6 @@ $(document).ready(function () {
             $('#required-courses-list').empty();
         }
     });
-
-    // Function to fetch required courses for the selected major
-    function fetchRequiredCourses(major) {
-        $.ajax({
-            url: '/get-required-courses',
-            method: 'GET',
-            data: { department: major }, // Ensure 'department' matches the parameter name in the Flask route
-            success: function (response) {
-                updateRequiredCoursesList(response);
-                updateProgressBar(completedCourses.length, response.length)//Update Progress Bar
-                updateStatusText(completedCourses.length, response.length);
-            },
-            error: function (xhr, status, error) {
-                console.error('Error fetching required courses:', error);
-            }
-        });
-    }
-
-    // Function to update the progress bar
-    function updateProgressBar(completedCoursesCount, totalCoursesCount) {
-        var completionPercentage = (completedCoursesCount / totalCoursesCount) * 100;
-        var circle = document.querySelector('.progress-ring-circle-progress');
-        var radius = circle.r.baseVal.value;
-        var circumference = radius * 2 * Math.PI;
-        var offset = circumference - completionPercentage / 100 * circumference;
-
-        circle.style.strokeDashoffset = offset;
-
-        // Define color thresholds and corresponding colors
-        var color1 = '#FF6347'; // Red
-        var color2 = '#FFD700'; // Yellow
-        var color3 = '#32CD32'; // Green
-
-        // Calculate color based on completion percentage
-        var strokeColor;
-        if (completionPercentage < 50) {
-            // Linear interpolation between color1 and color2
-            var interpolationFactor = completionPercentage / 50; // Range from 0 to 1
-            strokeColor = interpolateColors(color1, color2, interpolationFactor);
-        } else {
-            // Linear interpolation between color2 and color3
-            var interpolationFactor = (completionPercentage - 50) / 50; // Range from 0 to 1
-            strokeColor = interpolateColors(color2, color3, interpolationFactor);
-        }
-
-        // Update the stroke color
-        circle.style.stroke = strokeColor;
-        document.querySelector('.progress-text').textContent = completionPercentage.toFixed(2) + '%'; // Display with two decimal places
-    }
-
-    // Function to interpolate between two colors
-    function interpolateColors(color1, color2, factor) {
-        if (factor === undefined) factor = 0.5;
-        var result = color1.slice();
-        for (var i = 1; i < 7; i += 2) {
-            // Parse the integer values of the two colors
-            var v1 = parseInt(color1.substr(i, 2), 16);
-            var v2 = parseInt(color2.substr(i, 2), 16);
-
-            // Interpolate the color component
-            var v = Math.round(v1 + (v2 - v1) * factor);
-
-            // Convert it back to hexadecimal and update the result
-            result = result.substr(0, i) + v.toString(16).padStart(2, '0') + result.substr(i + 2);
-        }
-        return result;
-    }
-
-    function updateStatusText(completedCoursesCount, totalCoursesCount) {
-        var completionPercentage = (completedCoursesCount / totalCoursesCount) * 100;
-        var statusText = document.getElementById('status-text');
-
-        if (completionPercentage >= 75) {
-            statusText.textContent = 'Status: Good Standing';
-            statusText.style.color = 'lightgreen';
-        } else if (completionPercentage >= 50) {
-            statusText.textContent = 'Status: On Track';
-            statusText.style.color = 'yellow';
-        } else {
-            statusText.textContent = 'Status: Insufficient';
-            statusText.style.color = 'red';
-        }
-    }
 
     //Prevents Page Refresh when Add Button is Clicked
     $(document).on('click', '.add-button', function () {
@@ -325,6 +296,7 @@ $(document).ready(function () {
                         console.log('Course added successfully:', response.course_name);
                         console.log('Completed Courses:', completedCourses);
                         fetchRequiredCourses(selectedMajor); // Call fetchRequiredCourses with the selected major
+                        updateCompletedCoursesModal();
                         $('#alert').html('<p class="success">' + courseName + ' has been added to completed courses.</p>').show();
                         setTimeout(function () {
                             $('#alert').hide();
@@ -349,34 +321,115 @@ $(document).ready(function () {
                 $('#alert').hide();
             }, 5000); // Hide the alert after 3 seconds
         }
+
     });
+    // Remove Button for Completed Course Modal
+    $(document).on('click', '.remove-course-button', function () {
+        var selectedMajor = $('#major-select').val(); // Get the selected major
+
+        // Check if a major is selected
+        if (selectedMajor) {
+            // Extract the index of the remove button
+            var index = $(this).data('index');
+
+            // Check if the index is valid and the completedCourses array is not empty
+            if (index >= 0 && index < completedCourses.length) {
+                // Extract the course information from the completedCourses array based on the index
+                var course = completedCourses[index];
+
+                // Check if course is defined
+                if (course) {
+                    console.log('Course to remove:', course); // Debug code
+
+                    // AJAX call to remove the course
+                    $.ajax({
+                        url: '/remove-course',
+                        method: 'POST',
+                        data: { course_id: course.id }, // Assuming course.id represents the course ID
+                        success: function (response) {
+                            console.log('Course removed successfully:', course); // Debug code
+                            completedCourses.splice(index, 1);
+                            // Optionally, update the UI to reflect the removal of the course
+                            updateRequiredCoursesList(); // Update the required courses list
+                            fetchRequiredCourses(selectedMajor); // Call fetchRequiredCourses with the selected major
+                            updateCompletedCoursesModal();
+
+                            // Remove the course from the completed courses modal list
+                            $('.completed-course').each(function () {
+                                if ($(this).text() === course.name) {
+                                    $(this).remove();
+                                }
+                            });
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error removing course:', error);
+                        }
+                    });
+                } else {
+                    console.error('Course is undefined.');
+                }
+            } else {
+                console.error('Invalid index or completedCourses array is empty.');
+            }
+        } else {
+            // If no major is selected, show an alert to choose a major first
+            $('#alert').html('<p class="error">Please select a major first.</p>').show();
+            setTimeout(function () {
+                $('#alert').hide();
+            }, 5000); // Hide the alert after 3 seconds
+        }
+    });
+
+
 });
 
 
-// Function to open Completed Courses tab
-function openTab(evt, tabName) {
-    var i, tabcontent, tablinks;
+// Open the modal and populate it with completed courses
+function openModal(modalId) {
+    var modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = "block";
 
-    // Get all elements with class="tabcontent" and hide them
-    tabcontent = document.getElementsByClassName("tabcontent");
-    for (i = 0; i < tabcontent.length; i++) {
-        tabcontent[i].style.display = "none";
+        // Add logic to populate different modals with information
+        if (modalId === "completedCoursesModal") {
+            var completedCoursesList = document.getElementById("completedCoursesList");
+            completedCoursesList.innerHTML = ""; // Clear previous content
+
+            // Check if completed courses exist
+            if (completedCourses.length > 0) {
+                completedCourses.forEach(function (course) {
+                    var courseItem = document.createElement("div");
+                    courseItem.textContent = course.id + " " + course.name;
+                    //Button to mark course as incomplete
+                    var markIncompleteButton = document.createElement("button");
+                    markIncompleteButton.textContent = "Remove";
+                    markIncompleteButton.classList.add("remove-course-button");
+                    markIncompleteButton.setAttribute('data-course-id', course.id);
+                    markIncompleteButton.onclick = function () {
+
+                    };
+
+                    courseItem.appendChild(markIncompleteButton);
+                    completedCoursesList.appendChild(courseItem);
+                });
+            } else {
+                // If no completed courses exist, display a message
+                var noCoursesMessage = document.createElement("p");
+                noCoursesMessage.textContent = "No completed courses found.";
+                completedCoursesList.appendChild(noCoursesMessage);
+            }
+        }
+        updateCompletedCoursesModal();
+    } else {
+        console.error("Modal with ID", modalId, "not found.");
     }
-
-    // Get all elements with class="tablinks" and remove the class "active"
-    tablinks = document.getElementsByClassName("tablinks");
-    for (i = 0; i < tablinks.length; i++) {
-        tablinks[i].classList.remove("active");
-    }
-
-    // Show the current tab, and add an "active" class to the button that opened the tab
-    document.getElementById(tabName).style.display = "block";
-    evt.currentTarget.classList.add("active");
 }
 
-// Function to close the Completed Courses tab
-function closeCompletedCourses() {
-    document.getElementById("CompletedCourses").style.display = "none";
+
+// Close the modal
+function closeModal(modalId) {
+    var modal = document.getElementById(modalId);
+    modal.style.display = "none";
 }
 
 //Completed Courses Tab
@@ -393,6 +446,48 @@ function displayCompletedCourses() {
         // Append the course item to the completed courses list
         completedCoursesList.appendChild(courseItem);
     });
+}
+
+function toggleExpand() {
+    var content = document.getElementById('completedCoursesList');
+    var arrow = document.querySelector('.expand-arrow');
+
+    if (content.style.display === "none") {
+        content.style.display = "block";
+        arrow.style.display = "none"; // Hide the arrow when expanded
+    } else {
+        content.style.display = "none";
+        arrow.style.display = "inline"; // Show the arrow when collapsed
+    }
+}
+
+function updateCompletedCoursesModal() {
+    var completedCoursesList = document.getElementById("completedCoursesList");
+    completedCoursesList.innerHTML = ""; // Clear previous content
+
+    // Check if completed courses exist
+    if (completedCourses.length > 0) {
+        completedCourses.forEach(function (course, index) {
+            var courseItem = document.createElement("div");
+            courseItem.textContent = course.id + " " + course.name;
+
+            // Create the remove button
+            var removeButton = document.createElement("button");
+            removeButton.textContent = "Remove";
+            removeButton.classList.add("remove-course-button");
+            removeButton.setAttribute("data-index", index); // Set the data-index attribute
+            removeButton.onclick = function () {
+            };
+
+            courseItem.appendChild(removeButton);
+            completedCoursesList.appendChild(courseItem);
+        });
+    } else {
+        // If no completed courses exist, display a message
+        var noCoursesMessage = document.createElement("p");
+        noCoursesMessage.textContent = "No completed courses found.";
+        completedCoursesList.appendChild(noCoursesMessage);
+    }
 }
 
 // Call the function to display completed courses when needed
@@ -430,36 +525,6 @@ $(document).ready(function () {
     $('#pdfForm').submit();
 });
 
-//Plan of Study PDF Generation
-function generatePlanOfStudy() {
-    // Retrieve the selected year and advisor name from the form
-    var year = document.getElementById("year").value;
-    var advisor = document.getElementById("advisor").value;
-
-    // Prepare the form data to be submitted
-    var formData = new FormData();
-    formData.append("year", year);
-    formData.append("advisor", advisor);
-
-    // Send an AJAX request to the Flask route to generate the PDF
-    fetch('/generate_pdf', {
-        method: 'POST',
-        body: formData
-    })
-        .then(response => {
-            if (response.ok) {
-                // Handle successful response
-                console.log("PDF generated successfully!");
-            } else {
-                // Handle error response
-                console.error("Failed to generate PDF!");
-            }
-        })
-        .catch(error => {
-            console.error("An error occurred:", error);
-        });
-}
-
 // Function to toggle between light and dark modes
 function toggleMode() {
     const body = document.body;
@@ -485,3 +550,27 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
+//hold value of major dropdown for pos modal
+document.addEventListener('DOMContentLoaded', function () {
+    // Add an event listener to the major dropdown
+    document.getElementById('major-select').addEventListener('change', function () {
+        // Get the selected value of the major dropdown
+        var selectedMajor = this.value;
+
+        // Update the value of the hidden major dropdown
+        document.getElementById('hidden-major-dropdown').value = selectedMajor;
+
+        // Log a debug message with the selected major value
+        console.log('Selected Major:', selectedMajor);
+    });
+});
+
+
+function openNav() {
+    document.getElementById("mySidepanel").style.width = "300px";
+}
+
+/* Set the width of the sidebar to 0 (hide it) */
+function closeNav() {
+    document.getElementById("mySidepanel").style.width = "0";
+}
