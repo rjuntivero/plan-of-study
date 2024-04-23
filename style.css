@@ -151,8 +151,6 @@ body {
     padding: 20px;
     background-color: whitesmoke;
     box-shadow: 2px 1px 10px #0A233f;
-    min-height: fit-content;
-    min-width: fit-content;
     margin: 20px;
     border-radius: 10px;
     resize: both;
@@ -165,7 +163,7 @@ body {
 }
 
 .panel1 {
-    width: 2400px
+    width: 2100px
 }
 
 
@@ -266,7 +264,9 @@ fieldset {
 }
 
 .btn-primary:hover,
-.btn-primary2:hover {
+.btn-primary2:hover,
+.btn-primary3:hover,
+.openbtn:hover {
     background-color: rgb(109, 136, 162);
     color: white;
 }
@@ -276,12 +276,11 @@ fieldset {
     color: #fff;
     border-color: black;
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-    margin-top: 600px;
+    margin-top: 550px;
     border-radius: 50px;
     font-size: 10px;
     margin-left: auto;
     right: 10px;
-    top: auto;
     max-width: 80px;
 }
 
@@ -491,8 +490,83 @@ li.completed-course {
     color: lightgreen;
 }
 
-.tablinks {
+#modal {
+    position: relative;
+}
+
+.completedCourseButton {
     margin-top: 20px;
+}
+
+.modal {
+    position: fixed;
+    z-index: 1;
+    left: 43%;
+    top: 60px;
+    width: 26%;
+    height: 100%;
+}
+
+
+.expand-button {
+    border: none;
+    /* Hide the button */
+}
+
+.expand-arrow {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    margin-left: 500px;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+
+.course-content {
+    display: none;
+    /* Initially hide the content */
+    min-height: fit-content;
+    /* Set the min-height to fit-content */
+}
+
+#emailModal,
+#posModal {
+    z-index: 1500;
+}
+
+.modal-content-completed h2 {
+    position: sticky;
+    top: 0;
+    background-color: white;
+    z-index: 1;
+    padding: 10px;
+    margin: 0;
+}
+
+.modal-content-completed {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+.close {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    z-index: 99999;
+    left: 81%;
+    position: absolute;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
 }
 
 /* Results table Add Buttons*/
@@ -599,4 +673,89 @@ li.completed-course {
     margin-top: 10px;
     white-space: nowrap;
     /* Adjust margin as needed */
+}
+
+.remove-course-button {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 1px 5px;
+    cursor: pointer;
+    border-radius: 10px;
+    margin-left: 15px;
+    font-size: smaller;
+    font-family: monospace;
+}
+
+.remove-course-button:hover {
+    background-color: darkred;
+}
+
+/* The sidepanel menu */
+.sidepanel {
+    height: 400px;
+    /* Specify a height */
+    width: 0;
+    /* 0 width - change this with JavaScript */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Stay on top */
+    top: 500px;
+    right: 0;
+    background-color: #0A233f;
+    /* Black*/
+    overflow: hidden;
+    padding-top: 60px;
+    /* Place content 60px from the top */
+    transition: 0.5s;
+    /* 0.5 second transition effect to slide in the sidepanel */
+    border-radius: 10px;
+    border-color: white;
+    border-style: groove;
+}
+
+/* The sidepanel links */
+.sidepanel h2 {
+    padding: 8px 8px 8px 20px;
+    text-decoration: none;
+    color: white;
+    transition: 0.3s;
+    top: 10px;
+    font-size: 20px;
+    position: absolute;
+    text-decoration: underline;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif
+}
+
+/* When you mouse over the navigation links, change their color */
+.sidepanel a {
+    color: #f1f1f1;
+    text-decoration: none;
+}
+
+/* Position and style the close button (top right corner) */
+.sidepanel .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    right: 10px;
+}
+
+/* Style the button that is used to open the sidepanel */
+.openbtn {
+    background-color: #0A233f;
+    color: #fff;
+    border-color: black;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 10px;
+    right: 10px;
+    margin-left: auto;
+    margin-top: 20px;
+    z-index: 1000;
+    max-width: 80px;
+    border-radius: 5px;
+    border-style: none;
+    padding: 5px 8px;
 }
