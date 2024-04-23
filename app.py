@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, send_file, Blueprint, jsonify, Response, make_response, request, redirect
+from flask import Flask, render_template, request, send_file, Blueprint, jsonify, Response, make_response, request, redirect, current_app
 from flask_sqlalchemy import SQLAlchemy
 from Database import Base, Course
 from sqlalchemy import create_engine
@@ -84,12 +84,36 @@ def get_required_courses():
 #Email Button
 @app.route('/send-email', methods=['GET','POST'])
 def send_email():
+    sender_email = request.form.get('from')
+    recipient_email = request.form.get('to')
+    subject = request.form.get('subject')
+    message_content = request.form.get('message')
+    attachment_file = request.files.get('attachment')
+    cc_email = request.form.get('cc')
+
+    print("Recipient Email:", recipient_email)
+    print("Subject:", subject)
+    print("Message Content:", message_content)
+    if attachment_file:
+        print("Attachment File Detected:", attachment_file.filename)
+    else:
+        print("No Attachment File Detected")
+
     message = Message(
-        subject='Hello',
-        recipients=['jirokuntivero@gmail.com'],
-        sender=('RJ from Mailtrap', 'mailtrap@demomailtrap.com'),
+        subject=subject,
+        recipients=[recipient_email],
+        cc=[cc_email] if cc_email else None,
+        sender=(sender_email, sender_email), 
+        #sender=('RJ from Mailtrap', 'mailtrap@demomailtrap.com'),
     )
-    message.html = "<b> Hello UNF<\b>, sending you this email for my plan of study from <a href='https://google.com'>Flask app</a>, yuh"
+    message.html = f"<b>{message_content}</b>"
+
+    if attachment_file:
+        with attachment_file.stream as fp:  
+            attachment_data = fp.read()
+            print("Attachment Content Length:", len(attachment_data))
+            message.attach(attachment_file.filename, attachment_file.content_type, fp.read())
+
     mail.send(message)
 
     return "Message sent!"
@@ -245,7 +269,7 @@ def generatePlanOfStudy():
                             if isinstance(field_name, bytes):
                                 field_name = field_name.decode('utf-8')
                             field_name = field_name.strip('(/)').strip()
-
+                            
                             # Fill out other fields
                             if field_name == 'StudentName':
                                 annot.update({NameObject("/V"): createStringObject(name)})
