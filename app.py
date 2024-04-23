@@ -7,8 +7,8 @@ from sqlalchemy.exc import IntegrityError
 from flask_mail import Mail, Message
 from PyPDF2 import PdfReader, PdfWriter
 from PyPDF2.generic import NameObject, createStringObject
-import math
-import os, io
+import math, os, io
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -59,12 +59,25 @@ def reset_completed_attributes():
 @app.route('/get-required-courses')
 def get_required_courses():
     department = request.args.get('department')
-    if department == 'computer_science':
+    if department:
         db_session = DBSession()
-        computer_science_courses = db_session.query(Course).all()
-        required_courses = [{'cname': course.cname, 'completed': course.completed} for course in computer_science_courses]
+        if department == 'computer_science':
+            courses = db_session.query(Course).filter(Course.comp_sci == True).all()
+        elif department == 'data_science':
+            courses = db_session.query(Course).filter(Course.data_sci == True).all()
+        elif department == 'information_science':
+            courses = db_session.query(Course).filter(Course.info_sci == True).all()
+        elif department == 'information_technology':
+            courses = db_session.query(Course).filter(Course.info_tech == True).all()
+        elif department == 'information_systems':
+            courses = db_session.query(Course).filter(Course.info_sys == True).all()
+        else:
+            db_session.close()
+            return jsonify([])
+
+        required_courses = [{'cname': course.cname, 'completed': course.completed} for course in courses]
         db_session.close()
-        return jsonify(required_courses)
+        return jsonify(required_courses) 
     else:
         return jsonify([])
 
@@ -169,6 +182,25 @@ def add_course():
             # Handle the exception, optionally log it
             return redirect(request.referrer)
 
+#Remove Button for Completed Course Modal
+@app.route('/remove-course', methods=['POST'])
+def remove_course():
+    if request.method == 'POST':
+        try:
+            course_id = request.form['course_id']
+            
+            db_sesh = DBSession()
+            course_to_update = db_sesh.query(Course).filter_by(class_id=course_id).first()
+            course_to_update.completed = False
+            db_sesh.commit()
+            db_sesh.close()
+            
+            # Redirect back to the previous page
+            return redirect(request.referrer)
+        
+        except Exception as e:
+            return redirect(request.referrer)
+
 #PDF Generation (POS Generation) NOT YET IMPLEMENTED/WORKING
 # Plan of Study PDF Generation
 @app.route('/generate_pdf', methods=['GET','POST'])
@@ -176,6 +208,13 @@ def generatePlanOfStudy():
     # Retrieve form data
     name = request.form.get('NameField')  # Student name
     student_number = request.form.get('N-Number')  # Student number
+    create_date = datetime.now().strftime("%Y-%m-%d")
+    major = request.form.get('majorDropdown')
+
+    print("Name:", name)
+    print("Student Number:", student_number)
+    print("Create Date:", create_date)
+    print("Major:", major)
 
     try:
         # Define path to PDF template
@@ -194,35 +233,76 @@ def generatePlanOfStudy():
                 if '/Annots' in page:
                     for annot_num in range(len(page['/Annots'])):
                         annot = reader.get_object(page['/Annots'][annot_num])
-                        if '/T' in annot:
+                        if '/FT' in annot and annot['/FT'] == '/Btn':  # Check if it's a checkbox
+                            checkbox_name = annot.get('/T')
+                            if isinstance(checkbox_name, bytes):
+                                checkbox_name = checkbox_name.decode('utf-8')
+                            checkbox_name = checkbox_name.strip('(/)').strip()
+                            checkbox_value = 'Yes' if checkbox_name in ['CSMajor', 'DSMajor', 'ISysMajor', 'ISciMajor', 'ITMajor'] and major == checkbox_name.lower() else 'Off'
+                            updateCheckboxValues(page, annot, major)
+                        elif '/T' in annot:
                             field_name = annot['/T']
                             if isinstance(field_name, bytes):
                                 field_name = field_name.decode('utf-8')
                             field_name = field_name.strip('(/)').strip()
 
-                            # Fill out the classification checkbox field based on the selected year
+                            # Fill out other fields
                             if field_name == 'StudentName':
                                 annot.update({NameObject("/V"): createStringObject(name)})
                             elif field_name == 'StudentNumber':
                                 annot.update({NameObject("/V"): createStringObject(student_number)})
+                            elif field_name == 'CreateDate_af_date':
+                                current_date = datetime.now().strftime('%Y-%m-%d')  # Format as desired
+                                annot.update({NameObject("/V"): createStringObject(current_date)})
                 writer.add_page(page)
 
             # Define path for output filled PDF
-            output_pdf = "filled_plan_of_study.pdf"
-
-            # Write filled PDF to disk
-            with open(output_pdf, 'wb') as output_file:
-                writer.write(output_file)
+            output_pdf = io.BytesIO()
+            writer.write(output_pdf)
+            output_pdf.seek(0)
         
-        # Return the filled PDF as a response
-        return send_file(output_pdf, as_attachment=True)
+        # Return the PDF data as a response
+        response = make_response(output_pdf.getvalue())
+        response.headers['Content-Type'] = 'application/pdf'
+        response.headers['Content-Disposition'] = 'inline; filename=filled_plan_of_study.pdf'
+
+        return response
 
     except Exception as e:
         # Handle exceptions
         print("Error:", str(e))
         return jsonify(success=False, error=str(e))
 
+
+def updateCheckboxValues(page, annot, major_value):
+    # Map each major to its corresponding checkbox
+    checkbox_map = {
+        'computer_science': 'CSMajor',
+        'data_science': 'DSMajor',
+        'information_systems': 'ISysMajor',
+        'information_science': 'ISciMajor',
+        'information_technology': 'ITMajor'
+    }
+    # Get the corresponding checkbox name for the selected major
+    checkbox_name = checkbox_map.get(major_value)
+    if checkbox_name:
+        # Loop through each annotation on the page
+        for j in range(0, len(page['/Annots'])):
+            writer_annot = annot.get_object()
+            # Check if the annotation is the checkbox corresponding to the selected major
+            if writer_annot.get('/T') == checkbox_name:
+                # Update the checkbox value if it matches the major value
+                if checkbox_name.lower() == major_value:
+                    writer_annot.update({
+                        NameObject("/V"): NameObject("/Yes"),
+                        NameObject("/AS"): NameObject("/Yes")
+                    })
+                else:
+                    writer_annot.update({
+                        NameObject("/V"): NameObject("/Off"),
+                        NameObject("/AS"): NameObject("/Off")
+                    })
+
+
 if __name__ == '__main__':
     app.run(debug=True)
-
-
