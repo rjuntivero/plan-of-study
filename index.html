@@ -45,7 +45,7 @@
         <a href="#">Required Classes</a>
         <div class="required_course_section">
             Select Major
-            <select name="majorDropdown" id="major-select">
+            <select name="selectMajorDropdown" id="major-select">
                 <option value="Select" disabled selected>Select</option>
                 <option value="computer_science">Computer Science</option>
                 <option value="data_science">Data Science</option>
@@ -151,14 +151,30 @@
                     </div>
                     <!-- Tab Dropdown -->
                     <div class="tab">
-                        <button class="tablinks" onclick="openTab(event, 'CompletedCourses')">Completed Courses</button>
+                        <button type="button" class="completedCourseButton"
+                            onclick="openModal('completedCoursesModal')">My Completed
+                            Courses</button>
                     </div>
 
                     <!-- Content for Completed Courses Tab -->
-                    <div id="CompletedCourses" class="tabcontent">
-                        <ul id="completed-courses-list">
-                            <!-- This list will be filled with completed courses -->
-                        </ul>
+                    <div id="completedCoursesModal" class="modal">
+                        <div class="modal-content-completed">
+                            <span class="close" onclick="closeModal('completedCoursesModal')">&times;</span>
+                            <h2>Completed Courses</h2>
+                            <div id="completedCoursesList">
+                                {% for course in completed_courses %}
+                                <div class="course-item">
+                                    <span>{{ course.course_name }}</span>
+                                    <!-- Button to mark course as incomplete -->
+                                    <form action="/remove-course" method="post">
+                                        <input type="hidden" name="course_id" value="{{ course.course_id }}">
+                                        <button type="submit" class="remove-course-button">Remove</button>
+                                    </form>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <button class="expand-button" onclick="toggleExpand()">&#9660;</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -197,13 +213,18 @@
                     hx-get="/email-form">
                     Send Email
                 </button>
-                <button type="button" class="btn btn-primary2" data-toggle="modal" data-target="#posModal"
-                    hx-get="/pos-form">
+                <button type="button" class="btn btn-primary2" data-toggle="modal" data-target="#posModal">
                     Generate Plan of Study
                 </button>
+                <button class="openbtn" onclick="openNav()">&#9776;Stats</button>
                 <button type="button" class="btn btn-primary3" data-toggle="modal" data-target="#helpModal">
                     Help
                 </button>
+            </div>
+
+            <div id="mySidepanel" class="sidepanel">
+                <h2>Overview</h2> <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+
             </div>
 
             <!-- POPUP WINDOW FOR EMAIL-->
@@ -257,13 +278,14 @@
                                     <option value="3">Junior</option>
                                     <option value="4">Senior</option>
                                 </select><br><br>-->
+                                <input type="hidden" name="majorDropdown" id="hidden-major-dropdown" value="">
                                 <label for="Name">Name:</label>
                                 <input type="text" id="Name" name="NameField" required><br><br>
                                 <label for="Name">N#:</label>
                                 <input type="text" id="N-Number" name="N-Number" required><br><br>
 
                                 <!-- Additional fields for generating Plan of Study can be added here -->
-                                <button type="submit" onclick="generatePlanOfStudy()">Generate POS</button>
+                                <button type="submit">Generate POS</button>
                             </form>
                         </div>
                     </div>
