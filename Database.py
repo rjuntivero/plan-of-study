@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, Column, Integer, String, Boolean, Text, Fo
 from sqlalchemy.orm import sessionmaker, declarative_base, relationship
 from sqlalchemy.exc import IntegrityError
 
-engine = create_engine('sqlite:///:memory:')
+engine = create_engine('sqlite:///my_database.db')
 Session = sessionmaker(bind=engine)
 Base = declarative_base()
 
@@ -11,10 +11,16 @@ association_table = Table('prerequisite_association', Base.metadata,
     Column('prerequisite_id', String, ForeignKey('Course.class_id'), primary_key=True)
 )
 
+core_prereq_table = Table('core_prequisites', Base.metadata,
+    Column('core_id', String, ForeignKey('Core_Course.core_id'), primary_key=True),
+    Column('prerequisite_id', String, ForeignKey('Core_Course.core_id'), primary_key=True)
+)
+
+
 class Course(Base):
     __tablename__ = 'Course'
     class_id = Column(String, primary_key = True) 
-    cname = Column(String, nullable = False, unique = True)
+    cname = Column(String, nullable = False)
     fall = Column(Boolean)
     spring = Column(Boolean)
     summer = Column(Boolean)
@@ -33,6 +39,18 @@ class Course(Base):
 
     def __repr__(self):
         return f"Course: {self.class_id} Course Name: {self.cname}"
+    
+class Core_Course(Base):
+    __tablename__ = 'Core_Course'
+    core_id = Column(String, primary_key = True) 
+    core_name = Column(String, nullable = False)
+    core_complete = Column(Boolean, nullable = False)
+    core_credits = Column(Integer, nullable = False)
+    core_description = Column(Text)
+    prerequisites = relationship('Core_Course', secondary = core_prereq_table,
+                                 primaryjoin = core_id == core_prereq_table.c.core_id,
+                                 secondaryjoin=core_id == core_prereq_table.c.prerequisite_id,
+                                 backref='prerequisite_of')
 
 
 Base.metadata.create_all(engine)
@@ -137,14 +155,212 @@ course_details = [
 
     {'class_id': 'STA 4321', 'cname': 'Probability and Statistics', 'fall': True, 'spring': True, 'summer': True, 'comp_sci' : False, 'data_sci' : True, 'info_sci' : False, 'info_tech' : False, 'info_sys' : False, 'completed': False, 'credit_hrs': 4, 'description': 'This course will cover basic probability principles, random variables and univariate probability distributions, moments and an introduction to moment generating functions, introduction to sampling distributions and the Central Limit Theorem, and introduction to interval estimation and hypothesis testing.'},
 
-    {'class_id': 'STA 3163', 'cname': 'Statistical Mehtods I', 'fall': True, 'spring': False, 'summer': False, 'comp_sci' : False, 'data_sci' : True, 'info_sci' : False, 'info_tech' : False, 'info_sys' : False, 'completed': False, 'credit_hrs': 4, 'description': 'This is the first in a two-term sequence in applied statistical methods. This course focuses on descriptive and inferential statistics for means and proportions in one and two groups, simple linear regression with its diagnostics, and the one-way analysis of variance. The course incorporates technology and uses SAS for analysis of statistical data.'},
+    {'class_id': 'STA 3163', 'cname': 'Statistical Methods I', 'fall': True, 'spring': False, 'summer': False, 'comp_sci' : False, 'data_sci' : True, 'info_sci' : False, 'info_tech' : False, 'info_sys' : False, 'completed': False, 'credit_hrs': 4, 'description': 'This is the first in a two-term sequence in applied statistical methods. This course focuses on descriptive and inferential statistics for means and proportions in one and two groups, simple linear regression with its diagnostics, and the one-way analysis of variance. The course incorporates technology and uses SAS for analysis of statistical data.'},
 
-    {'class_id': 'STA 3164', 'cname': 'Statistical Mehtods II', 'fall': False, 'spring': True, 'summer': False, 'comp_sci' : False, 'data_sci' : True, 'info_sci' : False, 'info_tech' : False, 'info_sys' : False, 'completed': False, 'credit_hrs': 3, 'description': 'This is the second in a two-term sequence in applied statistical methods. In this course, the focus is on more complex data models such as multiple regression, the higher-order analysis of variance, and logistic regression. Data analysis is carried out using the SAS program.'}, 
+    {'class_id': 'STA 3164', 'cname': 'Statistical Methods II', 'fall': False, 'spring': True, 'summer': False, 'comp_sci' : False, 'data_sci' : True, 'info_sci' : False, 'info_tech' : False, 'info_sys' : False, 'completed': False, 'credit_hrs': 3, 'description': 'This is the second in a two-term sequence in applied statistical methods. In this course, the focus is on more complex data models such as multiple regression, the higher-order analysis of variance, and logistic regression. Data analysis is carried out using the SAS program.'}, 
     
 ]
-
     
     #{'class_id': 'COP 2220', 'cname': 'Programming I', 'fall': True, 'spring': True, 'summer': True, 'comp_sci' : False, 'data_sci' : False, 'info_sci' : False, 'info_tech' : False, 'info_sys' : False, 'completed': False, 'credit_hrs': 3, 'description': ''}]
+
+#core_id core_name core_complete core_credits core_description
+core_course_details = [
+                    #Part A of General Education Requirements
+                    #Communications Group 1
+                    {'core_id' : 'ENC 1101', 'core_name' : '(GW) Writing for Audeience and Purpose', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    #Humanties Group 2   
+                    {'core_id' : 'ARH 2000', 'core_name' : 'Art Appreciation', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'LIT 2000', 'core_name' : '(GW) Introduction to Literature', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'MUL 2010', 'core_name' : '(GW) Introduction to Music Literature', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'PHI 2010', 'core_name' : '(GW) Introduction to Philosophy', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'THE 2000', 'core_name' : 'Theater Appreciation', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    #Social Sciences Group 3
+                    {'core_id' : 'AMH 2020', 'core_name' : 'United States History Since 1877', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'ANT 2000', 'core_name' : 'Introduciton to Anthropology', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'POS 2041', 'core_name' : 'Introduction to American Government', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'PSY 2012', 'core_name' : 'Introduction to Psychology', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+                    
+                    {'core_id' : 'SYG 2000', 'core_name' : 'Introduction to Sociology', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    #Mathematics and Stastics Group 4
+                    {'core_id' : 'MAC 1105', 'core_name' : 'College Algebra', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'MGF 1106', 'core_name' : 'Finite Mathematics', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'MGF 1107', 'core_name' : 'Explorations of Mathematics', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'STA 2014', 'core_name' : 'Elementary Statistics for Health and Social Sciences', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'STA 2023', 'core_name' : 'Elementary Statistics for Business', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    #Natural and Physical Sciences Group 5
+                    {'core_id' : 'AST 2002', 'core_name' : 'Discovering Astronomy', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'BSC 1005', 'core_name' : 'Principles of Biology', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'BSC 1010C', 'core_name' : 'General Biology I', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'BSC 2085C', 'core_name' : 'Human Anatomy and Physiology', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'CHM 1020', 'core_name' : 'Discovering Chemistry', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'CHM 2045', 'core_name' : 'General Chemistry I', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'ESC 2000', 'core_name' : 'Earth Science', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'EVR X001', 'core_name' : 'Introduction to Environmental Science', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'PHY 1020', 'core_name' : 'Discovering Physics: How things work', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'PHY 2053', 'core_name' : 'Algebra-Based Physics I', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    #Part B of General Education Requirements
+                    #Writing Effectively (6 Hours)
+                    {'core_id' : 'ENC 1143', 'core_name' : '(GW) Writing with Evidence and Style', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'IDS 1932', 'core_name' : '(GW) Interdisciplinary First Year Writing', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'ENC 3202', 'core_name' : '(GW) Professional Communications for Business', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'ENC 3246', 'core_name' : '(GW) Professional Communications for Engineering', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'ENC 3250', 'core_name' : '(GW) Professional Communications', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    #Thinking Critically
+                    {'core_id' : 'AFH 3450', 'core_name' : 'South Africa', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'AMH 3571', 'core_name' : 'Introduction to African-American History', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'AMH 3580', 'core_name' : 'American Indian History', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'ANT 2423', 'core_name' : 'Kinship and Family', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'ANT 3212', 'core_name' : 'Peoples & Cultures of the World', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'ANT 3312', 'core_name' : 'North American Indians', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'ARH 2050', 'core_name' : 'Art History Survey I', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'ARH 2051', 'core_name' : 'Art History Survey II', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'ASH 3223', 'core_name' : 'Middle East', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'ASH 3440', 'core_name' : 'Japanese Civilization', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'ASN 2003', 'core_name' : 'Introduction to Asia', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'CCJ 2002', 'core_name' : 'Crime in America', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'ECO 3701', 'core_name' : 'Contemporary International Economic', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'EDF 2085', 'core_name' : 'Introduction to Diversity for Educators', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'EEX 3005', 'core_name' : 'Introduction to Disabilities', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'ENG 3613', 'core_name' : 'Topics in Disability Studies', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'EUH 3580', 'core_name' : 'Russian Thought & Culture', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'FIL 2000', 'core_name' : 'Film Appreciation', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'FIL 4848', 'core_name' : 'World Cinema Across Cultures', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'GEO 2420', 'core_name' : 'Cultural Geograph', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'HSC 2100', 'core_name' : 'Personal and Community Health', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'LAH 3300', 'core_name' : 'Latin America', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'LDR 3003', 'core_name' : 'Introduction to Leadership', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'MMC 2701', 'core_name' : 'Communicating Across Cultures', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'MUH 2012', 'core_name' : 'Enjoyment of Music', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'MUH 2017', 'core_name' : 'The History and Appreciation of Rock', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'MUH 2018', 'core_name' : 'Evolution of Jazz', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'MUT 1011', 'core_name' : 'Music Fundamentals', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'MUT 1111', 'core_name' : 'Theory I', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'PHI 2100', 'core_name' : '(GW) Art of Reasoning', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'PHI 2630', 'core_name' : '(GW) Ethical Issues', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'PUP 2312', 'core_name' : 'Race, Gender & Politics', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'REL 2300', 'core_name' : 'Comparative Religion', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'REL 3102 ', 'core_name' : 'Religion as Culture', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'SOP 3742', 'core_name' : 'Psychology of Women', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'SYD 3700', 'core_name' : 'Racial and Ethnic Minorities', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'SYD 3800', 'core_name' : 'Gender and Society', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'SYG 2013', 'core_name' : 'Sex, Race and Class', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'WOH 1012', 'core_name' : '(GW) World History I', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'WOH 1022', 'core_name' : '(GW) World History II', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    #Reasoning and Analyzing Quantitatively and/or Understanding the Scientific Method (4-6 Hours) 
+                    {'core_id' : 'MGF 1113', 'core_name' : 'Math for Teachers I', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'MAC 1101', 'core_name' : 'Intensive College Algebra', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'MAC 1101C', 'core_name' : 'Intensive College Algebra with Recitation', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'MAC 1105C', 'core_name' : 'College Algebra with Recitation', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'AST 2002L', 'core_name' : 'Discovering Astronomy Lab', 'core_complete' : False, 'core_credits' : 1, 'core_description' : ''},
+
+                    {'core_id' : 'BSC 1930', 'core_name' : 'Current Applications in Biology', 'core_complete' : False, 'core_credits' : 2, 'core_description' : ''},
+
+                    {'core_id' : 'CHM 1025', 'core_name' : 'Introduction to Chemistry', 'core_complete' : False, 'core_credits' : 2, 'core_description' : ''},
+
+                    {'core_id' : 'CHM 1025L', 'core_name' : 'Introduction to Chemistry Lab', 'core_complete' : False, 'core_credits' : 1, 'core_description' : ''},
+
+                    {'core_id' : 'CHM 2045L', 'core_name' : 'General Chemistry I Laboratory', 'core_complete' : False, 'core_credits' : 1, 'core_description' : ''},
+
+                    {'core_id' : 'HUN 1001', 'core_name' : 'Introduction to Nutrition Science', 'core_complete' : False, 'core_credits' : 2, 'core_description' : ''},
+
+                    {'core_id' : 'HUN 2201', 'core_name' : 'Basic Principles of Human Nutrition', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'IDC 2000', 'core_name' : 'The Beauty and Joy of Computing', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'PHI 2101', 'core_name' : 'Introduction to Logic', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'PHY 1020L', 'core_name' : 'Discovering Physics Laboratory: How things work', 'core_complete' : False, 'core_credits' : 1, 'core_description' : ''},
+
+                    {'core_id' : 'PHY 1028', 'core_name' : 'Introduction to Physics', 'core_complete' : False, 'core_credits' : 2, 'core_description' : ''},
+
+                    {'core_id' : 'PHY 1028L', 'core_name' : 'PHY 1028L - Introduction to Physics Lab', 'core_complete' : False, 'core_credits' : 1, 'core_description' : ''},
+
+                    {'core_id' : 'PHY 2464C', 'core_name' : 'The Physics of Music', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'PHY 2053L', 'core_name' : 'Algebra-Based Physics I Lab', 'core_complete' : False, 'core_credits' : 1, 'core_description' : ''},
+
+                    {'core_id' : 'PHY 2054', 'core_name' : 'Algebra-Based Physics II', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    {'core_id' : 'PHY 2054L', 'core_name' : 'Algebra-Based Physics II Lab', 'core_complete' : False, 'core_credits' : 1, 'core_description' : ''},
+
+                    #core template
+                    #{'core_id' : '', 'core_name' : '', 'core_complete' : False, 'core_credits' : 3, 'core_description' : ''},
+
+                    ]
 
 prereq_details = [
     #Compuer Science specific prerequisites, read as "Course (course_id) has the prequisite (prerequisite_id) 
@@ -172,6 +388,10 @@ for course_detail in course_details:
     c = Course(**course_detail)
     session.add(c)
 
+for detail in core_course_details:
+    x = Core_Course(**detail)
+    session.add(x)
+
 for p in prereq_details:
     try:
         p = association_table.insert().values(**p)
@@ -179,6 +399,8 @@ for p in prereq_details:
         session.commit()
     except IntegrityError:
         session.rollback()
+
+
 
 session.commit()
 
