@@ -1,13 +1,13 @@
 from flask import Flask, render_template, request, send_file, Blueprint, jsonify, Response, make_response, request, redirect, current_app
 from flask_sqlalchemy import SQLAlchemy
 from Database import Base, Course
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, collate
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
 from flask_mail import Mail, Message
 from PyPDF2 import PdfReader, PdfWriter
 from PyPDF2.generic import NameObject, createStringObject
-import math, os, io
+import math, os, io, random
 from datetime import datetime
 
 app = Flask(__name__)
@@ -167,6 +167,8 @@ def search():
     #count_before_filter = query.count()
     #print("Count of courses before filter:", count_before_filter)
 
+    query = query.order_by(collate(Course.cname, 'NOCASE'))
+
     courses = query.all()
     #debug statement
     #count_after_filter = len(courses)
@@ -227,25 +229,205 @@ def remove_course():
 
 #PDF Generation (POS Generation) NOT YET IMPLEMENTED/WORKING
 # Plan of Study PDF Generation
-@app.route('/generate_pdf', methods=['GET','POST'])
+@app.route('/generate_pdf', methods=['POST'])
 def generatePlanOfStudy():
-    # Retrieve form data
-    name = request.form.get('NameField')  # Student name
-    student_number = request.form.get('N-Number')  # Student number
-    create_date = datetime.now().strftime("%Y-%m-%d")
-    major = request.form.get('majorDropdown')
-
-    print("Name:", name)
-    print("Student Number:", student_number)
-    print("Create Date:", create_date)
-    print("Major:", major)
-
     try:
+        # Retrieve form data
+        name = request.form.get('NameField')  # Student name
+        student_number = request.form.get('N-Number')  # Student number
+        create_date = datetime.now().strftime("%Y-%m-%d") # Curr Date
+
+        #Find The Department (major = department)
+        major = request.form.get('majorDropdown')
+
+        # Hardcoded class data for each semester
+        class_data = {
+            'Semester 1': ['Legal & Ethical Issues in Computing', 'Computer Organization and Architecture', 'Programming II'],
+            'Semester 2': ['Computational Structures', 'Intro to Databases', 'Computer Networks'],
+            'Semester 3': ['Theory of Computation', 'Data Structures', 'Systems Programming'],
+            'Semester 4': ['Constr of Lang Translators', 'Operating Systems', 'Software Engineering'],
+            'Semester 5': ['Linear Algebra', 'Prob and Stats for Eng'],
+            'Semester 6': ['Design & Analysis of Algorithms'],
+            'Semester 7': ['Intro to Artificial Intelligence']
+        }
+
+        session = DBSession()
         # Define path to PDF template
         template_path = os.path.join(app.root_path, 'static', 'POS_Template.pdf')
 
         # Create a PdfWriter object to write to the output PDF
         writer = PdfWriter()
+
+        #Generate Logic ------------------------------------------------------------------
+        total_hrs = 0
+        comm_hrs = 0
+        humanities_hrs = 0
+        social_hrs = 0
+        math_stat_hrs = 0
+        science_hrs = 0
+        to_schedule = []
+
+        if (major == 'computer_science'):
+        #--------------if computer science major
+            major_compsci = session.query(Course).filter(Course.comp_sci == True).filter(Course.completed == False)
+            for m in major_compsci:
+                to_schedule.append(m)
+                if (m.communication == True):
+                    comm_hrs += m.credit_hrs
+                if (m.humanities == True):
+                    humanities_hrs += m.credit_hrs
+                if (m.social_sci == True):
+                    social_hrs += m.credit_hrs
+                if (m.math_stats == True):
+                    math_stat_hrs += m.credit_hrs
+                if (m.science == True):
+                    science_hrs += m.credit_hrs
+                total_hrs += m.credit_hrs
+
+        elif (major == 'data_science'):
+        #---------------if data science major
+            major_datasci = session.query(Course).filter(Course.data_sci == True).filter(Course.completed == False)
+            for m in major_datasci:
+                to_schedule.append(m)
+                if (m.communication == True):
+                    comm_hrs += m.credit_hrs
+                if (m.humanities == True):
+                    humanities_hrs += m.credit_hrs
+                if (m.social_sci == True):
+                    social_hrs += m.credit_hrs
+                if (m.math_stats == True):
+                    math_stat_hrs += m.credit_hrs
+                if (m.science == True):
+                    science_hrs += m.credit_hrs
+                total_hrs += m.credit_hrs
+
+        elif (major == 'information_science'):
+        #--------------if information science major
+            major_infosci = session.query(Course).filter(Course.info_sci == True).filter(Course.completed == False)
+            for m in major_infosci:
+                to_schedule.append(m)
+                if (m.communication == True):
+                    comm_hrs += m.credit_hrs
+                if (m.humanities == True):
+                    humanities_hrs += m.credit_hrs
+                if (m.social_sci == True):
+                    social_hrs += m.credit_hrs
+                if (m.math_stats == True):
+                    math_stat_hrs += m.credit_hrs
+                if (m.science == True):
+                    science_hrs += m.credit_hrs
+                total_hrs += m.credit_hrs
+
+        elif (major == 'information_systems'):
+        #-------------if information systems major
+            major_infosys = session.query(Course).filter(Course.info_sys == True).filter(Course.completed == False)
+            for m in major_infosys:
+                to_schedule.append(m)
+                if (m.communication == True):
+                    comm_hrs += m.credit_hrs
+                if (m.humanities == True):
+                    humanities_hrs += m.credit_hrs
+                if (m.social_sci == True):
+                    social_hrs += m.credit_hrs
+                if (m.math_stats == True):
+                    math_stat_hrs += m.credit_hrs
+                if (m.science == True):
+                    science_hrs += m.credit_hrs
+                total_hrs += m.credit_hrs
+
+        elif (major == 'information_technology'):
+        #------------if information technology major
+            major_infotech = session.query(Course).filter(Course.info_tech == True).filter(Course.completed == False)
+            for m in major_infotech:
+                to_schedule.append(m)
+                if (m.communication == True):
+                    comm_hrs += m.credit_hrs
+                if (m.humanities == True):
+                    humanities_hrs += m.credit_hrs
+                if (m.social_sci == True):
+                    social_hrs += m.credit_hrs
+                if (m.math_stats == True):
+                    math_stat_hrs += m.credit_hrs
+                if (m.science == True):
+                    science_hrs += m.credit_hrs
+                total_hrs += m.credit_hrs
+
+        done = session.query(Course).filter(Course.completed == True).all()
+
+
+        # ---------------------------------------------------General Education 
+        for d in done:
+            if (d.communication == True):
+                comm_hrs += d.credit_hrs
+            if (d.humanities == True):
+                humanities_hrs += d.credit_hrs
+            if (d.social_sci == True):
+                social_hrs += d.credit_hrs
+            if (d.math_stats == True):
+                math_stat_hrs += d.credit_hrs
+            if (d.science == True):
+                science_hrs += d.credit_hrs
+            
+        scheduled_class_ids = [course.class_id for course in to_schedule]
+
+        #querying !completed removes possible duplicates
+
+        #----------------communications needed
+        must_take = session.query(Course).filter( Course.class_id == 'ENC 1101' ).first()
+        if (must_take.completed == False):
+            to_schedule.append(must_take)
+            comm_hrs += int(must_take.credit_hrs) 
+        all_comm_classes = session.query(Course).filter(Course.communication == True).filter(Course.completed == False).filter(Course.class_id != 'ENC 1101').filter(~Course.class_id.in_(scheduled_class_ids)).all()
+        while comm_hrs < 9:
+            #random.sample() is remvoing the result from the list so no duplicates will be produced
+            comm_picked = random.sample(all_comm_classes, 1)
+            to_schedule.append(comm_picked[0])
+            comm_hrs += int(comm_picked[0].credit_hrs)
+
+        #----------------humanities needed
+        all_hum_classes = session.query(Course).filter(Course.humanities == True).filter(Course.completed == False).filter(~Course.class_id.in_(scheduled_class_ids)).all()
+        while humanities_hrs < 9:
+            hum_picked = random.sample(all_hum_classes, 1)
+            to_schedule.append(hum_picked[0])
+            humanities_hrs += int(hum_picked[0].credit_hrs)
+
+        #----------------social sciences needed 
+        all_social_classes = session.query(Course).filter(Course.social_sci == True).filter(Course.completed == False).filter(~Course.class_id.in_(scheduled_class_ids)).all()
+        while social_hrs < 6:
+            social_picked = random.sample(all_social_classes, 1)
+            to_schedule.append(social_picked[0])
+            social_hrs += int(social_picked[0].credit_hrs)
+
+        all_mathstat_classes = session.query(Course).filter(Course.math_stats == True).filter(Course.completed == False).filter(~Course.class_id.in_(scheduled_class_ids)).all()
+        if math_stat_hrs < 3:
+            mathstat_picked = random.sample(all_mathstat_classes, 1)
+            to_schedule.append(mathstat_picked[0])
+            math_stat_hrs += int(mathstat_picked[0].credit_hrs)
+            
+        all_science_classes = session.query(Course).filter(Course.science == True).filter(Course.completed == False).filter(~Course.class_id.in_(scheduled_class_ids)).all()
+        if science_hrs < 3:
+            science_picked = random.sample(all_science_classes, 1)
+            to_schedule.append(science_picked[0])
+            science_hrs += int(science_picked[0].credit_hrs)
+
+        all_either_classes = session.query(Course).filter( (Course.science == True) | (Course.math_stats == True) ).filter(Course.completed == False).filter(~Course.class_id.in_(scheduled_class_ids)).all()
+        while (math_stat_hrs + science_hrs) < 12:
+            chosen = random.sample(all_either_classes, 1)
+            if (chosen[0].math_stats == True):
+                math_stat_hrs += int(chosen[0].credit_hrs)
+            else:
+                science_hrs += int(chosen[0].credit_hrs)
+
+        total_hrs += (comm_hrs + humanities_hrs + social_hrs + math_stat_hrs + science_hrs)
+
+        for cla in to_schedule:
+            print(cla.class_id, cla.cname)
+
+        print("Total: ", total_hrs)
+
+        print()
+
+
 
         # Open the preexisting PDF template
         with open(template_path, 'rb') as template_file:
@@ -253,8 +435,8 @@ def generatePlanOfStudy():
 
             # Fill in form fields with data
             for page_num in range(len(reader.pages)):
-                page = reader.pages[page_num]
-                if '/Annots' in page:
+                page = reader.pages[page_num] # pdf render
+                if '/Annots' in page: 
                     for annot_num in range(len(page['/Annots'])):
                         annot = reader.get_object(page['/Annots'][annot_num])
                         if '/FT' in annot and annot['/FT'] == '/Btn':  # Check if it's a checkbox
@@ -269,7 +451,7 @@ def generatePlanOfStudy():
                             if isinstance(field_name, bytes):
                                 field_name = field_name.decode('utf-8')
                             field_name = field_name.strip('(/)').strip()
-                            
+
                             # Fill out other fields
                             if field_name == 'StudentName':
                                 annot.update({NameObject("/V"): createStringObject(name)})
@@ -278,24 +460,54 @@ def generatePlanOfStudy():
                             elif field_name == 'CreateDate_af_date':
                                 current_date = datetime.now().strftime('%Y-%m-%d')  # Format as desired
                                 annot.update({NameObject("/V"): createStringObject(current_date)})
+                    # Fill out text fields for each semester
+                    for semester, classes in class_data.items():
+                        for idx, class_name in enumerate(classes):
+                            field_name = f'{semester}Row{idx+1}'
+                            annot = find_text_field(reader, field_name)
+                            if annot:
+                                print(f"Updating text field '{field_name}' with class name '{class_name}'")
+                                annot.update({NameObject("/V"): createStringObject(class_name)})
+                            else:
+                                print(f"Text field '{field_name}' not found")
+
                 writer.add_page(page)
 
-            # Define path for output filled PDF
-            output_pdf = io.BytesIO()
-            writer.write(output_pdf)
-            output_pdf.seek(0)
-        
+        # Define path for output filled PDF
+        output_pdf = io.BytesIO()
+        writer.write(output_pdf)
+        output_pdf.seek(0)
+
         # Return the PDF data as a response
         response = make_response(output_pdf.getvalue())
         response.headers['Content-Type'] = 'application/pdf'
         response.headers['Content-Disposition'] = 'inline; filename=filled_plan_of_study.pdf'
 
+        session.close()
         return response
 
     except Exception as e:
         # Handle exceptions
         print("Error:", str(e))
         return jsonify(success=False, error=str(e))
+
+
+def find_text_field(reader, field_name):
+    for page in reader.pages:
+        if '/Annots' in page:
+            for annot_num in range(len(page['/Annots'])):
+                annot = reader.get_object(page['/Annots'][annot_num])
+                if '/T' in annot:
+                    annot_field_name = annot['/T']
+                    if isinstance(annot_field_name, bytes):
+                        annot_field_name = annot_field_name.decode('utf-8')
+                    annot_field_name = annot_field_name.strip('(/)').strip()
+                    if annot_field_name == field_name:
+                        print(f"Found text field '{field_name}'")
+                        return annot
+    print(f"Text field '{field_name}' not found")
+    return None
+
 
 
 def updateCheckboxValues(page, annot, major_value):
@@ -330,3 +542,5 @@ def updateCheckboxValues(page, annot, major_value):
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+    
