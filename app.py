@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request, send_file, Blueprint, jsonify, Response, make_response, request, redirect, current_app
 from flask_sqlalchemy import SQLAlchemy
-from Database import Base, Course
+from Database import Base, Course, association_table
 from sqlalchemy import create_engine, collate
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, aliased
 from sqlalchemy.exc import IntegrityError
 from flask_mail import Mail, Message
 from PyPDF2 import PdfReader, PdfWriter
@@ -419,9 +419,76 @@ def generatePlanOfStudy():
                 science_hrs += int(chosen[0].credit_hrs)
 
         total_hrs += (comm_hrs + humanities_hrs + social_hrs + math_stat_hrs + science_hrs)
+        
+        #----------------------------------------------------------------------------Genrerate plan
+
+        '''for sched in to_schedule:
+            course_id_to_check = sched.class_id
+            has_prerequisite = session.query(association_table).\
+            filter(association_table.c.course_id == course_id_to_check).\
+            count() > 0
+
+            if has_prerequisite:
+                print(f"The course with ID '{course_id_to_check}' has prerequisites.")
+            else:
+                print(f"The course with ID '{course_id_to_check}' does not have prerequisites.")'''
+
+        to_schedule.sort(key=lambda sched: session.query(association_table).filter(association_table.c.course_id == sched.class_id).count() > 0)
+        '''semesters = []
+        current_semester = []
+        current_credits = 0
+        index = 0
+        to_revisit = []
+
+        for course in to_schedule:
+            # Handle labs by pairing them with their corresponding lecture course
+            if 'Lab' in course.cname:
+                lecture_id = course.class_id.rstrip('L')
+                lecture_course = session.query(Course).filter(lecture_id == Course.class_id).first()
+                if lecture_course:
+                    if lecture_course not in current_semester:
+                        current_semester.append(lecture_course)
+                        #lecture_course.completed = True
+                        current_credits += lecture_course.credit_hrs
+                    to_schedule.remove(lecture_course)
+                    current_semester.append(course)
+                    #course.completed = True
+                    current_credits += course.credit_hrs
+            #class is not a lab
+            else:
+                current_semester.append(course)
+                current_credits += course.credit_hrs
+
+            if current_credits >= 12:
+                semesters.append(current_semester)
+                current_semester = []
+                current_credits = 0
+
+    
+        for index, semester in enumerate(semesters, start=1):
+            print(f"Semester {index}:")
+            for course in semester:
+                print(f"- {course.cname} ({course.class_id})")
+            print()'''
+        
 
         for cla in to_schedule:
-            print(cla.class_id, cla.cname)
+            print(cla.class_id, cla.cname, "has the following prerequisites: ")
+            prerequisites = session.query(association_table).\
+                    filter(association_table.c.course_id == cla.class_id).\
+                    all()
+
+            
+            if prerequisites:
+                for p in prerequisites:
+                    prereq_course = session.query(Course).filter(Course.class_id == p.prerequisite_id).first()
+                    print(prereq_course.class_id, prereq_course.cname)
+            else:
+                print("None")
+            
+            print()
+
+
 
         print("Total: ", total_hrs)
 
