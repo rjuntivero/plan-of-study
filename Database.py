@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine, Column, Integer, String, Boolean, Text, ForeignKey, Table, insert
 from sqlalchemy.orm import sessionmaker, declarative_base, relationship
 from sqlalchemy.exc import IntegrityError
+import random
 
 engine = create_engine('sqlite:///my_database.db')
 Session = sessionmaker(bind=engine)
@@ -85,7 +86,7 @@ course_details = [
     
     {'class_id': 'CIS 4327', 'cname': 'Information Systems Senior Project I', 'fall': True, 'spring': False, 'summer': False,'comp_sci' : False, 'data_sci' : False, 'info_sci' : True, 'info_tech' : False, 'info_sys' : True, 'communication': False, 'humanities' : False, 'social_sci': False, 'math_stats' : False, 'science' : False, 'completed': False, 'credit_hrs': 3, 'description': 'First of a two-course senior project on systems development with a significant laboratory component. Students will learn system development life cycle methodologies and its phases including requirements specification, analysis, and design. Students will design and develop a prototype information system in the context of the project team environment.'},
 
-    {'class_id': 'CAP 4784', 'cname': 'Introduction to Data Analytics', 'fall': False, 'spring': True, 'summer': False,'comp_sci' : False, 'data_sci' : True, 'info_sci' : True, 'info_tech' : False, 'info_sys' : True, 'communication': False, 'humanities' : False, 'social_sci': False, 'math_stats' : False, 'science' : False, 'completed': False, 'credit_hrs': 3, 'description': 'This course gives a broad overview of the various aspects of data analytics and visualizations. Students will learn ways of accessing data from various sources such as web APIs and repositories, techniques of cleaning data and organizing data for analysis, using analytical methods to solve real-world problems, and create visualizations to aid the interpretation of analysis results. Students will have hands on training using relevant programming languages, as well as analytics and visualization tools. Over the course of the semester, students will apply lessons learned and use tools trained to work on exploratory and descriptive data science projects.'},
+    {'class_id': 'CAP 3784', 'cname': 'Introduction to Data Analytics', 'fall': False, 'spring': True, 'summer': False,'comp_sci' : False, 'data_sci' : True, 'info_sci' : True, 'info_tech' : False, 'info_sys' : True, 'communication': False, 'humanities' : False, 'social_sci': False, 'math_stats' : False, 'science' : False, 'completed': False, 'credit_hrs': 3, 'description': 'This course gives a broad overview of the various aspects of data analytics and visualizations. Students will learn ways of accessing data from various sources such as web APIs and repositories, techniques of cleaning data and organizing data for analysis, using analytical methods to solve real-world problems, and create visualizations to aid the interpretation of analysis results. Students will have hands on training using relevant programming languages, as well as analytics and visualization tools. Over the course of the semester, students will apply lessons learned and use tools trained to work on exploratory and descriptive data science projects.'},
 
     {'class_id': 'CIS 4328', 'cname': 'Information Systems Senior Project II', 'fall': False, 'spring': True, 'summer': False,'comp_sci' : False, 'data_sci' : False, 'info_sci' : True, 'info_tech' : False, 'info_sys' : True, 'communication': False, 'humanities' : False, 'social_sci': False, 'math_stats' : False, 'science' : False, 'completed': False, 'credit_hrs': 3, 'description': 'The second of a two-course senior project on systems development with a significant laboratory component. Students will design, implement, and deploy a prototype information system in the context of a project team environment employing relevant systems development life cycle methodologies.'},
     
@@ -145,7 +146,23 @@ course_details = [
 
     {'class_id': 'STA 3163', 'cname': 'Statistical Methods I', 'fall': True, 'spring': False, 'summer': False, 'comp_sci' : False, 'data_sci' : True, 'info_sci' : False, 'info_tech' : False, 'info_sys' : False, 'communication': False, 'humanities' : False, 'social_sci': False, 'math_stats' : False, 'science' : False, 'completed': False, 'credit_hrs': 4, 'description': 'This is the first in a two-term sequence in applied statistical methods. This course focuses on descriptive and inferential statistics for means and proportions in one and two groups, simple linear regression with its diagnostics, and the one-way analysis of variance. The course incorporates technology and uses SAS for analysis of statistical data.'},
 
-    {'class_id': 'STA 3164', 'cname': 'Statistical Methods II', 'fall': False, 'spring': True, 'summer': False, 'comp_sci' : False, 'data_sci' : True, 'info_sci' : False, 'info_tech' : False, 'info_sys' : False, 'communication': False, 'humanities' : False, 'social_sci': False, 'math_stats' : False, 'science' : False, 'completed': False, 'credit_hrs': 3, 'description': 'This is the second in a two-term sequence in applied statistical methods. In this course, the focus is on more complex data models such as multiple regression, the higher-order analysis of variance, and logistic regression. Data analysis is carried out using the SAS program.'}, 
+    {'class_id': 'STA 3164', 'cname': 'Statistical Methods II', 'fall': False, 'spring': True, 'summer': False, 'comp_sci' : False, 'data_sci' : True, 'info_sci' : False, 'info_tech' : False, 'info_sys' : False, 'communication': False, 'humanities' : False, 'social_sci': False, 'math_stats' : False, 'science' : False, 'completed': False, 'credit_hrs': 3, 'description': 'This is the second in a two-term sequence in applied statistical methods. In this course, the focus is on more complex data models such as multiple regression, the higher-order analysis of variance, and logistic regression. Data analysis is carried out using the SAS program.'},
+
+    {'class_id': 'ENC 2210', 'cname': 'Technical Writing', 'fall': True, 'spring': True, 'summer': True, 'comp_sci' : False, 'data_sci' : True, 'info_sci' : False, 'info_tech' : False, 'info_sys' : False, 'communication': True, 'humanities' : False, 'social_sci': False, 'math_stats' : False, 'science' : False, 'completed': False, 'credit_hrs': 3, 'description': 'This course will introduce students to scientific, technical, and professional writing with a focus on practical information about communicating in different workplace environments and professional/technical discourse communities. Students will analyze rhetorical situations and issues (of audience, organization, visual design, style, and the material production of documents) common to different scientific, technical, and professional writing genres, including emails, letters, resumes, memos, reports (progress, lab, etc.), proposals, technical descriptions, technical definitions, and technical manuals.'},
+
+    {'class_id': 'STA 4504', 'cname': 'Categorical Data Analysis', 'fall': True, 'spring': True, 'summer': True, 'comp_sci' : False, 'data_sci' : True, 'info_sci' : False, 'info_tech' : False, 'info_sys' : False, 'communication': False, 'humanities' : False, 'social_sci': False, 'math_stats' : False, 'science' : False, 'completed': False, 'credit_hrs': 3, 'description': 'The Categorical Data course is an introduction to the methods used to analyze data that are categorical rather than continuous in nature. The topics include description and inference using proportions and odds ratios, contingency tables, Poisson regression, logistic regression, and multi-category logit models.'},
+
+    {'class_id': 'COT 4560', 'cname': 'Applied Graphg Theory', 'fall': True, 'spring': True, 'summer': True, 'comp_sci' : False, 'data_sci' : True, 'info_sci' : False, 'info_tech' : False, 'info_sys' : False, 'communication': False, 'humanities' : False, 'social_sci': False, 'math_stats' : False, 'science' : False, 'completed': False, 'credit_hrs': 3, 'description': 'Students in this course will study classical graph theory, its applications in computing and modeling real-word phenomena, and graph algorithms.'},
+
+    {'class_id': 'CIS 4900', 'cname': 'Directed Independent Study', 'fall': True, 'spring': True, 'summer': True, 'comp_sci' : False, 'data_sci' : True, 'info_sci' : False, 'info_tech' : False, 'info_sys' : False, 'communication': False, 'humanities' : False, 'social_sci': False, 'math_stats' : False, 'science' : False, 'completed': False, 'credit_hrs': 3, 'description': 'This course is reserved for senior level computing and information science students, on topics supportive of the students overall program.'},
+
+    {'class_id': 'SPC 4064', 'cname': 'Public Speaking for Professionals', 'fall': True, 'spring': True, 'summer': True, 'comp_sci' : True, 'data_sci' : True, 'info_sci' : True, 'info_tech' : True, 'info_sys' : True, 'communication': False, 'humanities' : False, 'social_sci': False, 'math_stats' : False, 'science' : False, 'completed': False, 'credit_hrs': 3, 'description': 'This course is reserved for senior level computing and information science students, on topics supportive of the students overall program.'},
+
+    {'class_id': 'MAJ 0001', 'cname': 'Major Elective I', 'fall': True, 'spring': True, 'summer': True, 'comp_sci' : True, 'data_sci' : True, 'info_sci' : True, 'info_tech' : True, 'info_sys' : True, 'communication': False, 'humanities' : False, 'social_sci': False, 'math_stats' : False, 'science' : False, 'completed': False, 'credit_hrs': 3, 'description': 'Select any upper-level(3XXX or 4XXX) Computing course not used to fulfill other requirements. This includes any course starting with the following: CAP, CDA, CEN, CIS, CNT, COP, or, COT'},
+
+    {'class_id': 'MAJ 0002', 'cname': 'Major Elective II', 'fall': True, 'spring': True, 'summer': True, 'comp_sci' : True, 'data_sci' : True, 'info_sci' : True, 'info_tech' : True, 'info_sys' : True, 'communication': False, 'humanities' : False, 'social_sci': False, 'math_stats' : False, 'science' : False, 'completed': False, 'credit_hrs': 3, 'description': 'Select any upper-level(3XXX or 4XXX) Computing course not used to fulfill other requirements. This includes any course starting with the following: CAP, CDA, CEN, CIS, CNT, COP, or, COT'},
+
+    {'class_id': 'MAJ 0003', 'cname': 'Major Elective III', 'fall': True, 'spring': True, 'summer': True, 'comp_sci' : True, 'data_sci' : True, 'info_sci' : True, 'info_tech' : True, 'info_sys' : True, 'communication': False, 'humanities' : False, 'social_sci': False, 'math_stats' : False, 'science' : False, 'completed': False, 'credit_hrs': 3, 'description': 'Select any upper-level(3XXX or 4XXX) Computing course not used to fulfill other requirements. This includes any course starting with the following: CAP, CDA, CEN, CIS, CNT, COP, or, COT'},
 
     #--------------------------------------------------------------------------------------------General education classes
     #Part A of General Education Requirements
@@ -181,8 +198,6 @@ course_details = [
 
     {'class_id' : 'MGF 1107', 'cname' : 'Explorations of Mathematics', 'fall': True, 'spring': True, 'summer': True, 'comp_sci' : False, 'data_sci' : False, 'info_sci' : False, 'info_tech' : False, 'info_sys' : False, 'communication': False, 'humanities' : False, 'social_sci': False, 'math_stats' : True, 'science' : False, 'completed' : False, 'credit_hrs' : 3, 'description' : 'Prerequisite:  MAT 1033; This course is primarily for non-science and non-business majors who need to fulfill the general education math requirement. This course promotes the appreciation of applied mathematics. MGF1106 Finite Mathematics is not a prerequisite for this course. Topics may include number theory, voting theory, rates of growth, geometry, and graph theory.'},
 
-    {'class_id' : 'STA 2014', 'cname' : 'Elementary Statistics for Health and Social Sciences', 'fall': True, 'spring': True, 'summer': True, 'comp_sci' : False, 'data_sci' : False, 'info_sci' : False, 'info_tech' : False, 'info_sys' : False, 'communication': False, 'humanities' : False, 'social_sci': False, 'math_stats' : True, 'science' : False, 'completed' : False, 'credit_hrs' : 3, 'description' : 'Prerequisite:  MAC 1105 or MAC 1147; This course is an introduction to descriptive data analysis, probability, statistical distributions, confidence intervals, testing of hypotheses, regression, and correlation. Topics are selected to emphasize applications in health and social sciences. Technology will be integrated in this course. (Cannot be used to satisfy upper-level degree requirements by mathematics and statistics majors).'},
-
     #Natural and Physical Sciences Group 5
     {'class_id' : 'AST 2002', 'cname' : 'Discovering Astronomy', 'fall': True, 'spring': True, 'summer': True, 'comp_sci' : False, 'data_sci' : False, 'info_sci' : False, 'info_tech' : False, 'info_sys' : False, 'communication': False, 'humanities' : False, 'social_sci': False, 'math_stats' : False, 'science' : True, 'completed' : False, 'credit_hrs' : 3, 'description' : 'This course is a survey of current knowledge of the astronomical universe and of how that knowledge has been accumulated. Students will study the solar system, stars, and galaxies, and will review contemporary research and exploration. This course will include occasional observing sessions and there will be three hours of lecture each week.'},
 
@@ -211,8 +226,6 @@ course_details = [
     {'class_id' : 'IDS 1932', 'cname' : '(GW) Interdisciplinary First Year Writing', 'fall': True, 'spring': True, 'summer': True, 'comp_sci' : False, 'data_sci' : False, 'info_sci' : False, 'info_tech' : False, 'info_sys' : False, 'communication': True, 'humanities' : False, 'social_sci': False, 'math_stats' : False, 'science' : False, 'completed' : False, 'credit_hrs' : 3, 'description' : 'This course is a first-year writing seminar that blends topics, issues, and knowledge from two or more disciplines, including Writing Studies. This course is intended for students interested in topics ranging from history to art to science and technology to business and is designed exclusively for first-year students. Please note: This course will substitute for ENC 1143, so students cannot receive credit for both ENC 1143 and the first year interdisciplinary writing seminar.'},
 
     {'class_id' : 'ENC 3202', 'cname' : '(GW) Professional Communications for Business', 'fall': True, 'spring': True, 'summer': True, 'comp_sci' : False, 'data_sci' : False, 'info_sci' : False, 'info_tech' : False, 'info_sys' : False, 'communication': True, 'humanities' : False, 'social_sci': False, 'math_stats' : False, 'science' : False, 'completed' : False, 'credit_hrs' : 3, 'description' : 'In this course, students develop the virtues of business communication—practicality, accountability, and reliability. They learn the profession’s language first-hand by reading and researching in business literature. In discussing such texts, evaluating them, and responding in kind through their own presentations and documents, students become more articulate professionals, more insightful thinkers, and more fluent participants in public life. This is a Gordon Writing Rule course.'},
-
-    {'class_id' : 'ENC 3246', 'cname' : '(GW) Professional Communications for Engineering', 'fall': True, 'spring': True, 'summer': True, 'comp_sci' : False, 'data_sci' : False, 'info_sci' : False, 'info_tech' : False, 'info_sys' : False, 'communication': True, 'humanities' : False, 'social_sci': False, 'math_stats' : False, 'science' : False, 'completed' : False, 'credit_hrs' : 3, 'description' : 'Prerequisites: ENC1101 and EGN1001C; In this course, students develop discipline-specific technical and professional writing skills for the field of engineering. Students will read and write in a variety of genres to understand what writing professionally as an engineer might mean. This course will also prepare students to produce documents for their senior design seminars. This is a Gordon Writing Rule course.'},
 
     {'class_id' : 'ENC 3250', 'cname' : '(GW) Professional Communications', 'fall': True, 'spring': True, 'summer': True, 'comp_sci' : False, 'data_sci' : False, 'info_sci' : False, 'info_tech' : False, 'info_sys' : False, 'communication': True, 'humanities' : False, 'social_sci': False, 'math_stats' : False, 'science' : False, 'completed' : False, 'credit_hrs' : 3, 'description' : 'The primary emphasis of technical writing is on the basics of professional communication-research, organization, grammar/mechanics/style. We will also pay attention to the forms of professional communication-letters, memos, and formal and informal reports. Gordon Rule English credit.'},
 
@@ -283,7 +296,7 @@ course_details = [
 
     {'class_id' : 'REL 2300', 'cname' : 'Comparative Religion', 'fall': True, 'spring': True, 'summer': True, 'comp_sci' : False, 'data_sci' : False, 'info_sci' : False, 'info_tech' : False, 'info_sys' : False, 'communication': False, 'humanities' : True, 'social_sci': False, 'math_stats' : False, 'science' : False, 'completed' : False, 'credit_hrs' : 3, 'description' : 'Comparative Religion first introduces students to the major religions of the world, and then seeks points of comparison between those religions in an effort to come to terms with the common bases of human religious experience.'},
 
-    {'class_id' : 'REL 3102 ', 'cname' : 'Religion as Culture', 'fall': True, 'spring': True, 'summer': True, 'comp_sci' : False, 'data_sci' : False, 'info_sci' : False, 'info_tech' : False, 'info_sys' : False, 'communication': False, 'humanities' : True, 'social_sci': False, 'math_stats' : False, 'science' : False, 'completed' : False, 'credit_hrs' : 3, 'description' : 'This course will introduce students to one of the primary approaches to Religious Studies: the Social Scientific Study of religion as culture (other, complementary, approaches being History of Religions/Comparative Religions and Philosophy of Religion). We will begin with a unit examining classical theorists (Durkhiem and Weber), current theoretical developments and exploring some key methodological issues. In Units Two and Three we will draw on case studies illustrating religious diversity to refine/apply our understanding of theory and method.'},
+    {'class_id' : 'REL 3102', 'cname' : 'Religion as Culture', 'fall': True, 'spring': True, 'summer': True, 'comp_sci' : False, 'data_sci' : False, 'info_sci' : False, 'info_tech' : False, 'info_sys' : False, 'communication': False, 'humanities' : True, 'social_sci': False, 'math_stats' : False, 'science' : False, 'completed' : False, 'credit_hrs' : 3, 'description' : 'This course will introduce students to one of the primary approaches to Religious Studies: the Social Scientific Study of religion as culture (other, complementary, approaches being History of Religions/Comparative Religions and Philosophy of Religion). We will begin with a unit examining classical theorists (Durkhiem and Weber), current theoretical developments and exploring some key methodological issues. In Units Two and Three we will draw on case studies illustrating religious diversity to refine/apply our understanding of theory and method.'},
 
     {'class_id' : 'SOP 3742', 'cname' : 'Psychology of Women', 'fall': True, 'spring': True, 'summer': True, 'comp_sci' : False, 'data_sci' : False, 'info_sci' : False, 'info_tech' : False, 'info_sys' : False, 'communication': False, 'humanities' : True, 'social_sci': False, 'math_stats' : False, 'science' : False, 'completed' : False, 'credit_hrs' : 3, 'description' : 'This course involves an investigation of the major theories as they relate to psychology of gender. Findings from the field of psychology regarding aspects of sexual differentiation and gender roles in general, and for women in particular, will be explored.'},
 
@@ -338,6 +351,7 @@ course_details = [
 
     {'class_id' : 'PHY 2054L', 'cname' : 'Algebra-Based Physics II Lab', 'fall': True, 'spring': True, 'summer': True, 'comp_sci' : False, 'data_sci' : False, 'info_sci' : False, 'info_tech' : False, 'info_sys' : False, 'communication': False, 'humanities' : False, 'social_sci': False, 'math_stats' : False, 'science' : True, 'completed' : False, 'credit_hrs' : 1, 'description' : 'Co-requisite: PHY 2054; This course is the laboratory course that accompanies PHY 2054. This course will be three hours of laboratory. Course Fees: $25'},
 
+
 ]
 
 prereq_details = [
@@ -359,7 +373,40 @@ prereq_details = [
     {'course_id': 'CAP 4630', 'prerequisite_id': 'COP 3530'},
     {'course_id': 'COP 4610', 'prerequisite_id': 'COP 3530'},
     {'course_id': 'COP 4610', 'prerequisite_id': 'COP 3404'},
-    {'course_id': 'CEN 4010', 'prerequisite_id': 'COP 3703'}
+    {'course_id': 'CEN 4010', 'prerequisite_id': 'COP 3703'},
+    {'course_id': 'CAP 3784', 'prerequisite_id': 'COP 3530'},
+    {'course_id': 'MAC 2312', 'prerequisite_id': 'MAC 2311'},
+    {'course_id': 'PHY 2048C', 'prerequisite_id': 'MAC 2311'},
+    {'course_id': 'MAS 3105', 'prerequisite_id': 'MAC 2312'},
+    {'course_id': 'STA 4321', 'prerequisite_id': 'MAC 2312'},
+    {'course_id': 'MAS 3032', 'prerequisite_id': 'MAC 2312'},
+    {'course_id': 'STA 3164', 'prerequisite_id': 'STA 3163'},
+    {'course_id': 'PHY 2048C', 'prerequisite_id': 'PHY 2049'},
+    {'course_id': 'COT 4560', 'prerequisite_id': 'COP 3530'},
+    {'course_id': 'STA 4504', 'prerequisite_id': 'STA 3163'},
+    {'course_id': 'ENC 2210', 'prerequisite_id': 'ENC 1101'},
+    {'course_id': 'CAP 4770', 'prerequisite_id': 'COP 3703'},
+    {'course_id': 'CAP 4764', 'prerequisite_id': 'COP 3703'},
+    {'course_id': 'CIS 3526', 'prerequisite_id': 'COP 2220'},
+    {'course_id': 'COP 4640', 'prerequisite_id': 'COP 3503'},
+    {'course_id': 'CIS 4360', 'prerequisite_id': 'COP 3503'},
+    {'course_id': 'CIS 4325', 'prerequisite_id': 'CNT 4504'},
+    {'course_id': 'CIS 4325', 'prerequisite_id': 'COP 4640'},
+    {'course_id': 'CNT 4406', 'prerequisite_id': 'CNT 4504'},
+    {'course_id': 'CEN 4083', 'prerequisite_id': 'CNT 4504'},
+    {'course_id': 'CIS 4364', 'prerequisite_id': 'CNT 4504'},
+    {'course_id': 'CIS 4366', 'prerequisite_id': 'CIS 4360'},
+    {'course_id': 'CIS 4364', 'prerequisite_id': 'CIS 4360'},
+    {'course_id': 'COP 3855', 'prerequisite_id': 'COP 2220'},
+    {'course_id': 'COP 4813', 'prerequisite_id': 'COP 3503'},
+    {'course_id': 'CDA 4010', 'prerequisite_id': 'COP 3503'},
+    {'course_id': 'CIS 4327', 'prerequisite_id': 'COP 3855'},
+    {'course_id': 'CIS 4327', 'prerequisite_id': 'COP 3530'},
+    {'course_id': 'CIS 4327', 'prerequisite_id': 'COP 3703'},
+    {'course_id': 'CAP 3784', 'prerequisite_id': 'COP 3703'},
+    {'course_id': 'CIS 4328', 'prerequisite_id': 'COP 4813'},
+    {'course_id': 'CIS 4328', 'prerequisite_id': 'CIS 4327'},
+
     ]
 
 try:
@@ -387,7 +434,7 @@ session.commit()
 
 courses = session.query(Course).all()
 
-for course in courses:
+'''for course in courses:
     print(course.cname, course.completed)
     prerequisites = course.prerequisites
     if prerequisites:
@@ -396,4 +443,172 @@ for course in courses:
             print(f"- {prereq.class_id}")
     else:
         print("No Prerequisites")
-    print()
+    print()'''
+
+
+#classes = session.query(Course).filter( (Course.comp_sci == True) & (Course.data_sci == True)).all()
+#Check for completed classes and track credit hours of each group i.e., communication, humanities, etc.
+#check completed for each category, count total comleted hours, add more classes until it reaches the appropriate number
+#communication = 9, humanities = 9, social sciences = 6, math/stats = 3, science = 3, math/stats AND/OR science = 6, total >= 36
+
+total_hrs = 0
+comm_hrs = 0
+humanities_hrs = 0
+social_hrs = 0
+math_stat_hrs = 0
+science_hrs = 0
+to_schedule = []
+
+#--------------if computer science major
+major_compsci = session.query(Course).filter(Course.comp_sci == True).filter(Course.completed == False)
+for m in major_compsci:
+    to_schedule.append(m)
+    if (m.communication == True):
+        comm_hrs += m.credit_hrs
+    if (m.humanities == True):
+        humanities_hrs += m.credit_hrs
+    if (m.social_sci == True):
+        social_hrs += m.credit_hrs
+    if (m.math_stats == True):
+        math_stat_hrs += m.credit_hrs
+    if (m.science == True):
+        science_hrs += m.credit_hrs
+    total_hrs += m.credit_hrs
+
+#---------------if data science major
+'''major_datasci = session.query(Course).filter(Course.data_sci == True).filter(Course.completed == False)
+for m in major_datasci:
+    to_schedule.append(m)
+    if (m.communication == True):
+        comm_hrs += m.credit_hrs
+    if (m.humanities == True):
+        humanities_hrs += m.credit_hrs
+    if (m.social_sci == True):
+        social_hrs += m.credit_hrs
+    if (m.math_stats == True):
+        math_stat_hrs += m.credit_hrs
+    if (m.science == True):
+        science_hrs += m.credit_hrs
+    total_hrs += m.credit_hrs'''
+
+#--------------if information science major
+'''major_infosci = session.query(Course).filter(Course.info_sci == True).filter(Course.completed == False)
+for m in major_infosci:
+    to_schedule.append(m)
+    if (m.communication == True):
+        comm_hrs += m.credit_hrs
+    if (m.humanities == True):
+        humanities_hrs += m.credit_hrs
+    if (m.social_sci == True):
+        social_hrs += m.credit_hrs
+    if (m.math_stats == True):
+        math_stat_hrs += m.credit_hrs
+    if (m.science == True):
+        science_hrs += m.credit_hrs
+    total_hrs += m.credit_hrs'''
+
+#-------------if information systems major
+'''major_infosys = session.query(Course).filter(Course.info_sys == True).filter(Course.completed == False)
+for m in major_infosys:
+    to_schedule.append(m)
+    if (m.communication == True):
+        comm_hrs += m.credit_hrs
+    if (m.humanities == True):
+        humanities_hrs += m.credit_hrs
+    if (m.social_sci == True):
+        social_hrs += m.credit_hrs
+    if (m.math_stats == True):
+        math_stat_hrs += m.credit_hrs
+    if (m.science == True):
+        science_hrs += m.credit_hrs
+    total_hrs += m.credit_hrs'''
+
+#------------if information technology major
+'''major_infotech = session.query(Course).filter(Course.info_tech == True).filter(Course.completed == False)
+for m in major_infotech:
+    to_schedule.append(m)
+    if (m.communication == True):
+        comm_hrs += m.credit_hrs
+    if (m.humanities == True):
+        humanities_hrs += m.credit_hrs
+    if (m.social_sci == True):
+        social_hrs += m.credit_hrs
+    if (m.math_stats == True):
+        math_stat_hrs += m.credit_hrs
+    if (m.science == True):
+        science_hrs += m.credit_hrs
+    total_hrs += m.credit_hrs'''
+
+done = session.query(Course).filter(Course.completed == True).all()
+
+# ---------------------------------------------------General Education 
+for d in done:
+    if (d.communication == True):
+        comm_hrs += d.credit_hrs
+    if (d.humanities == True):
+        humanities_hrs += d.credit_hrs
+    if (d.social_sci == True):
+        social_hrs += d.credit_hrs
+    if (d.math_stats == True):
+        math_stat_hrs += d.credit_hrs
+    if (d.science == True):
+        science_hrs += d.credit_hrs
+    
+scheduled_class_ids = [course.class_id for course in to_schedule]
+
+#querying !completed removes possible duplicates
+
+#----------------communications needed
+must_take = session.query(Course).filter( Course.class_id == 'ENC 1101' ).first()
+if (must_take.completed == False):
+    to_schedule.append(must_take)
+    comm_hrs += int(must_take.credit_hrs) 
+all_comm_classes = session.query(Course).filter(Course.communication == True).filter(Course.completed == False).filter(Course.class_id != 'ENC 1101').filter(~Course.class_id.in_(scheduled_class_ids)).all()
+while comm_hrs < 9:
+    #random.sample() is remvoing the result from the list so no duplicates will be produced
+    comm_picked = random.sample(all_comm_classes, 1)
+    to_schedule.append(comm_picked[0])
+    comm_hrs += int(comm_picked[0].credit_hrs)
+
+#----------------humanities needed
+all_hum_classes = session.query(Course).filter(Course.humanities == True).filter(Course.completed == False).filter(~Course.class_id.in_(scheduled_class_ids)).all()
+while humanities_hrs < 9:
+    hum_picked = random.sample(all_hum_classes, 1)
+    to_schedule.append(hum_picked[0])
+    humanities_hrs += int(hum_picked[0].credit_hrs)
+
+#----------------social sciences needed 
+all_social_classes = session.query(Course).filter(Course.social_sci == True).filter(Course.completed == False).filter(~Course.class_id.in_(scheduled_class_ids)).all()
+while social_hrs < 6:
+    social_picked = random.sample(all_social_classes, 1)
+    to_schedule.append(social_picked[0])
+    social_hrs += int(social_picked[0].credit_hrs)
+
+all_mathstat_classes = session.query(Course).filter(Course.math_stats == True).filter(Course.completed == False).filter(~Course.class_id.in_(scheduled_class_ids)).all()
+if math_stat_hrs < 3:
+    mathstat_picked = random.sample(all_mathstat_classes, 1)
+    to_schedule.append(mathstat_picked[0])
+    math_stat_hrs += int(mathstat_picked[0].credit_hrs)
+    
+all_science_classes = session.query(Course).filter(Course.science == True).filter(Course.completed == False).filter(~Course.class_id.in_(scheduled_class_ids)).all()
+if science_hrs < 3:
+    science_picked = random.sample(all_science_classes, 1)
+    to_schedule.append(science_picked[0])
+    science_hrs += int(science_picked[0].credit_hrs)
+
+all_either_classes = session.query(Course).filter( (Course.science == True) | (Course.math_stats == True) ).filter(Course.completed == False).filter(~Course.class_id.in_(scheduled_class_ids)).all()
+while (math_stat_hrs + science_hrs) < 12:
+    chosen = random.sample(all_either_classes, 1)
+    if (chosen[0].math_stats == True):
+        math_stat_hrs += int(chosen[0].credit_hrs)
+    else:
+        science_hrs += int(chosen[0].credit_hrs)
+
+total_hrs += (comm_hrs + humanities_hrs + social_hrs + math_stat_hrs + science_hrs)
+
+for cla in to_schedule:
+    print(cla.class_id, cla.cname)
+
+print("Total: ", total_hrs)
+
+print()
