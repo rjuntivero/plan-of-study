@@ -44,7 +44,7 @@
     <div class="sidenav">
         <a href="#">Required Classes</a>
         <div class="required_course_section">
-            Select Major
+            <strong>Select Major</strong>
             <select name="selectMajorDropdown" id="major-select">
                 <option value="Select" disabled selected>Select</option>
                 <option value="computer_science">Computer Science</option>
@@ -58,8 +58,7 @@
             </ul>
         </div>
         <div class="required_course_section">
-            Total Credits: <strong>120</strong>
-
+            Required Course Credits: <strong id="total-credits">0</strong>
         </div>
         <div class="progress-container">
             <svg class="progress-ring" width="200" height="200">
@@ -222,8 +221,15 @@
                 </button>
             </div>
 
+            <!--Stats Modal-->
             <div id="mySidepanel" class="sidepanel">
                 <h2>Overview</h2> <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+                <div id="springCourses">
+                </div>
+                <div id="fallCourses">
+                </div>
+                <div id="allCourses">
+                </div>
 
             </div>
 
@@ -239,7 +245,9 @@
                             </button>
                         </div>
                         <div class="modal-body" hx-target="#emailModal .modal-body">
-                            <form action="/send-email" method="post">
+                            <form action="/send-email" method="post" enctype="multipart/form-data">
+                                <label for="from">Your Email:</label>
+                                <input type="email" id="from" name="from" required><br><br>
                                 <label for="to">To:</label>
                                 <input type="email" id="to" name="to" required><br><br>
                                 <label for="subject">Subject:</label>
@@ -270,22 +278,10 @@
                         </div>
                         <div class="modal-body" hx-target="#posModal .modal-body">
                             <!-- Content for generating Plan of Study -->
-                            <form id="pdfForm" action="/generate_pdf" method="post" target="_blank">
-                                <!--<label for="year">Classification:</label>
-                                <select name="year" id="year">
-                                    <option value="1">Freshman</option>
-                                    <option value="2">Sophomore</option>
-                                    <option value="3">Junior</option>
-                                    <option value="4">Senior</option>
-                                </select><br><br>-->
+                            <form id="pdfForm" action="/generate_pos" method="post" target="_blank">
                                 <input type="hidden" name="majorDropdown" id="hidden-major-dropdown" value="">
-                                <label for="Name">Name:</label>
-                                <input type="text" id="Name" name="NameField" required><br><br>
-                                <label for="Name">N#:</label>
-                                <input type="text" id="N-Number" name="N-Number" required><br><br>
-
-                                <!-- Additional fields for generating Plan of Study can be added here -->
-                                <button type="submit">Generate POS</button>
+                                <a href="/static/POS_Template.pdf" target="_blank">UNF Plan of Study Template</a>
+                                <button type="submit" onclick="generateCourses()">Generate POS</button>
                             </form>
                         </div>
                     </div>
