@@ -1,17 +1,18 @@
-from flask import Flask, render_template, request, send_file, Blueprint, jsonify, Response, make_response, request, redirect, current_app
+from flask import Flask, render_template, request, send_file, Blueprint, jsonify, Response, make_response, request, redirect, current_app, render_template_string
+from flask import session as flask_session
 from flask_sqlalchemy import SQLAlchemy
 from Database import Base, Course, association_table
 from sqlalchemy import create_engine, collate
 from sqlalchemy.orm import sessionmaker, aliased
 from sqlalchemy.exc import IntegrityError
 from flask_mail import Mail, Message
-from PyPDF2 import PdfReader, PdfWriter
-from PyPDF2.generic import NameObject, createStringObject
-import math, os, io, random
+import math, os, io, random, json
 from datetime import datetime
+from io import BytesIO
 
 app = Flask(__name__)
 
+app.secret_key = '06192004'
 #Database configuration
 DB_PATH = 'sqlite:///my_database.db'
 engine = create_engine(DB_PATH)
@@ -75,7 +76,7 @@ def get_required_courses():
             db_session.close()
             return jsonify([])
 
-        required_courses = [{'cname': course.cname, 'completed': course.completed} for course in courses]
+        required_courses = [{'cname': course.cname, 'completed': course.completed, 'credit_hrs': course.credit_hrs} for course in courses]
         db_session.close()
         return jsonify(required_courses) 
     else:
@@ -227,36 +228,40 @@ def remove_course():
         except Exception as e:
             return redirect(request.referrer)
 
-#PDF Generation (POS Generation) NOT YET IMPLEMENTED/WORKING
+#Handle semestersArray request
+@app.route('/process_semesters', methods=['POST'])
+def process_semesters():
+    if request.is_json:
+        semesters_data = request.json
+
+        print("Received semesters array:", semesters_data)
+
+        flask_session['semesters_data'] = semesters_data
+        print(flask_session)
+
+        # Process semesters_data
+        return jsonify(success=True)
+    else:
+        return jsonify(error='Request must contain JSON data.', success=False), 415
+
 # Plan of Study PDF Generation
-@app.route('/generate_pdf', methods=['POST'])
+@app.route('/generate_pos', methods=['POST'])
 def generatePlanOfStudy():
     try:
-        # Retrieve form data
-        name = request.form.get('NameField')  # Student name
-        student_number = request.form.get('N-Number')  # Student number
-        create_date = datetime.now().strftime("%Y-%m-%d") # Curr Date
+        #initialize allowed amount of scheduable courses
+        #max_allowed_semesters = 9
+       # semesters_array = flask_session.get('semesters_data').get('semestersArray')
+        #if len(semesters_array) > max_allowed_semesters:
+         #   return jsonify(sucess=False, error="Plan of Study Allows Only a Maximum of 9 Scheduable Semesters")
 
         #Find The Department (major = department)
         major = request.form.get('majorDropdown')
 
-        # Hardcoded class data for each semester
-        class_data = {
-            'Semester 1': ['Legal & Ethical Issues in Computing', 'Computer Organization and Architecture', 'Programming II'],
-            'Semester 2': ['Computational Structures', 'Intro to Databases', 'Computer Networks'],
-            'Semester 3': ['Theory of Computation', 'Data Structures', 'Systems Programming'],
-            'Semester 4': ['Constr of Lang Translators', 'Operating Systems', 'Software Engineering'],
-            'Semester 5': ['Linear Algebra', 'Prob and Stats for Eng'],
-            'Semester 6': ['Design & Analysis of Algorithms'],
-            'Semester 7': ['Intro to Artificial Intelligence']
-        }
 
         session = DBSession()
         # Define path to PDF template
         template_path = os.path.join(app.root_path, 'static', 'POS_Template.pdf')
 
-        # Create a PdfWriter object to write to the output PDF
-        writer = PdfWriter()
 
         #Generate Logic ------------------------------------------------------------------
         total_hrs = 0
@@ -419,10 +424,10 @@ def generatePlanOfStudy():
                 science_hrs += int(chosen[0].credit_hrs)
 
         total_hrs += (comm_hrs + humanities_hrs + social_hrs + math_stat_hrs + science_hrs)
-        
+
         #----------------------------------------------------------------------------Genrerate plan
 
-        '''for sched in to_schedule:
+        for sched in to_schedule:
             course_id_to_check = sched.class_id
             has_prerequisite = session.query(association_table).\
             filter(association_table.c.course_id == course_id_to_check).\
@@ -431,10 +436,10 @@ def generatePlanOfStudy():
             if has_prerequisite:
                 print(f"The course with ID '{course_id_to_check}' has prerequisites.")
             else:
-                print(f"The course with ID '{course_id_to_check}' does not have prerequisites.")'''
+                print(f"The course with ID '{course_id_to_check}' does not have prerequisites.")
 
         to_schedule.sort(key=lambda sched: session.query(association_table).filter(association_table.c.course_id == sched.class_id).count() > 0)
-        '''semesters = []
+        semesters = []
         current_semester = []
         current_credits = 0
         index = 0
@@ -469,7 +474,7 @@ def generatePlanOfStudy():
             print(f"Semester {index}:")
             for course in semester:
                 print(f"- {course.cname} ({course.class_id})")
-            print()'''
+            print()
         
 
         for cla in to_schedule:
@@ -488,123 +493,30 @@ def generatePlanOfStudy():
             
             print()
 
-
-
         print("Total: ", total_hrs)
 
         print()
 
-
-
-        # Open the preexisting PDF template
-        with open(template_path, 'rb') as template_file:
-            reader = PdfReader(template_file)
-
-            # Fill in form fields with data
-            for page_num in range(len(reader.pages)):
-                page = reader.pages[page_num] # pdf render
-                if '/Annots' in page: 
-                    for annot_num in range(len(page['/Annots'])):
-                        annot = reader.get_object(page['/Annots'][annot_num])
-                        if '/FT' in annot and annot['/FT'] == '/Btn':  # Check if it's a checkbox
-                            checkbox_name = annot.get('/T')
-                            if isinstance(checkbox_name, bytes):
-                                checkbox_name = checkbox_name.decode('utf-8')
-                            checkbox_name = checkbox_name.strip('(/)').strip()
-                            checkbox_value = 'Yes' if checkbox_name in ['CSMajor', 'DSMajor', 'ISysMajor', 'ISciMajor', 'ITMajor'] and major == checkbox_name.lower() else 'Off'
-                            updateCheckboxValues(page, annot, major)
-                        elif '/T' in annot:
-                            field_name = annot['/T']
-                            if isinstance(field_name, bytes):
-                                field_name = field_name.decode('utf-8')
-                            field_name = field_name.strip('(/)').strip()
-
-                            # Fill out other fields
-                            if field_name == 'StudentName':
-                                annot.update({NameObject("/V"): createStringObject(name)})
-                            elif field_name == 'StudentNumber':
-                                annot.update({NameObject("/V"): createStringObject(student_number)})
-                            elif field_name == 'CreateDate_af_date':
-                                current_date = datetime.now().strftime('%Y-%m-%d')  # Format as desired
-                                annot.update({NameObject("/V"): createStringObject(current_date)})
-                    # Fill out text fields for each semester
-                    for semester, classes in class_data.items():
-                        for idx, class_name in enumerate(classes):
-                            field_name = f'{semester}Row{idx+1}'
-                            annot = find_text_field(reader, field_name)
-                            if annot:
-                                print(f"Updating text field '{field_name}' with class name '{class_name}'")
-                                annot.update({NameObject("/V"): createStringObject(class_name)})
-                            else:
-                                print(f"Text field '{field_name}' not found")
-
-                writer.add_page(page)
-
-        # Define path for output filled PDF
-        output_pdf = io.BytesIO()
-        writer.write(output_pdf)
-        output_pdf.seek(0)
-
-        # Return the PDF data as a response
-        response = make_response(output_pdf.getvalue())
-        response.headers['Content-Type'] = 'application/pdf'
-        response.headers['Content-Disposition'] = 'inline; filename=filled_plan_of_study.pdf'
-
+        # Convert Course objects to dictionaries
+        schedule_data = []
+        for course in to_schedule:
+            course_info = {
+                'cname': course.cname,
+                'spring': course.spring,
+                'summer': course.summer,
+                'fall': course.fall
+            }
+            schedule_data.append(course_info)
+        
         session.close()
-        return response
+        return jsonify(schedule_data)
+
 
     except Exception as e:
         # Handle exceptions
         print("Error:", str(e))
         return jsonify(success=False, error=str(e))
 
-
-def find_text_field(reader, field_name):
-    for page in reader.pages:
-        if '/Annots' in page:
-            for annot_num in range(len(page['/Annots'])):
-                annot = reader.get_object(page['/Annots'][annot_num])
-                if '/T' in annot:
-                    annot_field_name = annot['/T']
-                    if isinstance(annot_field_name, bytes):
-                        annot_field_name = annot_field_name.decode('utf-8')
-                    annot_field_name = annot_field_name.strip('(/)').strip()
-                    if annot_field_name == field_name:
-                        print(f"Found text field '{field_name}'")
-                        return annot
-    print(f"Text field '{field_name}' not found")
-    return None
-
-
-
-def updateCheckboxValues(page, annot, major_value):
-    # Map each major to its corresponding checkbox
-    checkbox_map = {
-        'computer_science': 'CSMajor',
-        'data_science': 'DSMajor',
-        'information_systems': 'ISysMajor',
-        'information_science': 'ISciMajor',
-        'information_technology': 'ITMajor'
-    }
-    # Get the corresponding checkbox name for the selected major
-    checkbox_name = checkbox_map.get(major_value)
-    if checkbox_name:
-        # Loop through each annotation on the page
-        for j in range(0, len(page['/Annots'])):
-            writer_annot = annot.get_object()
-            # Check if the annotation is the checkbox corresponding to the selected major
-            if writer_annot.get('/T') == checkbox_name:
-                # Update the checkbox value if it matches the major value
-                if checkbox_name.lower() == major_value:
-                    writer_annot.update({
-                        NameObject("/V"): NameObject("/Yes"),
-                        NameObject("/AS"): NameObject("/Yes")
-                    })
-                else:
-                    writer_annot.update({
-                        NameObject("/V"): NameObject("/Off"),
-                        NameObject("/AS"): NameObject("/Off")
-                    })
 
 
 if __name__ == '__main__':
