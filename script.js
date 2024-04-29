@@ -125,6 +125,7 @@ function generateSemesters() {
                 semestersArray = semestersArray.filter(item => item !== semesterString);
                 console.log('Semester removed:', semesterString);
                 console.log('Semesters array:', semestersArray);
+                sendSemestersArray(semestersArray);
             };
 
             semesterDiv.appendChild(removeButton);
@@ -136,7 +137,34 @@ function generateSemesters() {
             console.log('Semesters array:', semestersArray);
         });
     }
+    sendSemestersArray(semestersArray);
 }
+
+//Allows for use of semestersArray in Flask
+function sendSemestersArray(semestersArray) {
+    // Send the semestersArray to Flask using AJAX
+    // Make sure to stringify your JSON data and set the Content-Type header to 'application/json'
+    fetch('/process_semesters', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            semestersArray: semestersArray
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            // Handle the response from the server
+            console.log(data);
+        })
+        .catch(error => {
+            // Handle any errors
+            console.error('Error:', error);
+        });
+}
+
+
 
 
 //Refresh Course 'completed' Attributes
@@ -170,6 +198,8 @@ function updateRequiredCoursesList(courses) {
                 courseItem.addClass('completed-course');
             }
             requiredCoursesList.append(courseItem);
+
+
         });
     } else {
         // If no courses are found, display a default message
@@ -186,8 +216,9 @@ function fetchRequiredCourses(major) {
         data: { department: major }, // Ensure 'department' matches the parameter name in the Flask route
         success: function (response) {
             updateRequiredCoursesList(response);
-            updateProgressBar(completedCourses.length, response.length)//Update Progress Bar
+            updateProgressBar(completedCourses, response.length, response)//Update Progress Bar
             updateStatusText(completedCourses.length, response.length);
+            updateTotalCredits(response)
         },
         error: function (xhr, status, error) {
             console.error('Error fetching required courses:', error);
@@ -196,8 +227,31 @@ function fetchRequiredCourses(major) {
 }
 
 // Function to update the progress bar
-function updateProgressBar(completedCoursesCount, totalCoursesCount) {
-    var completionPercentage = (completedCoursesCount / totalCoursesCount) * 100;
+function updateProgressBar(completedCourses, totalCoursesCount, requiredCourses) {
+    console.log('Completed Courses:', completedCourses);
+    console.log('Required Courses:', requiredCourses);
+
+    var completedRequiredCourses = [];
+
+    completedCourses.filter(completedCourse => {
+        console.log('Checking completed course:', completedCourse);
+        var foundRequiredCourse = requiredCourses.some(requiredCourse => {
+            console.log('Checking required course:', requiredCourse);
+            var comparisonResult = requiredCourse.cname === completedCourse.name;
+            console.log('Comparing:', requiredCourse.cname, completedCourse.name, 'Result:', comparisonResult);
+            if (comparisonResult) {
+                completedRequiredCourses.push(completedCourse);
+                return true;
+            }
+        });
+        if (completedCourse.completed && foundRequiredCourse) {
+            return true;
+        }
+    });
+
+    console.log("Completed Required:", completedRequiredCourses);
+    var completedRequiredCoursesCount = completedRequiredCourses.length;
+    var completionPercentage = (completedRequiredCoursesCount / totalCoursesCount) * 100;
     var circle = document.querySelector('.progress-ring-circle-progress');
     var radius = circle.r.baseVal.value;
     var circumference = radius * 2 * Math.PI;
@@ -245,6 +299,7 @@ function interpolateColors(color1, color2, factor) {
     return result;
 }
 
+//Update Message for Progress Circle Status
 function updateStatusText(completedCoursesCount, totalCoursesCount) {
     var completionPercentage = (completedCoursesCount / totalCoursesCount) * 100;
     var statusText = document.getElementById('status-text');
@@ -256,10 +311,27 @@ function updateStatusText(completedCoursesCount, totalCoursesCount) {
         statusText.textContent = 'Status: On Track';
         statusText.style.color = 'yellow';
     } else {
-        statusText.textContent = 'Status: Insufficient';
-        statusText.style.color = 'red';
+        statusText.textContent = 'Status: Entrant';
+        statusText.style.color = 'orange';
     }
 }
+
+//Displayed Total Credits for Each Major
+function updateTotalCredits(requiredCourses) {
+    // Filter out the required courses that haven't been completed
+    const incompleteCourses = requiredCourses.filter(course => !course.completed);
+
+    // Calculate total credits for incomplete courses
+    const totalCredits = incompleteCourses.reduce((total, course) => total + course.credit_hrs, 0);
+
+    // Update the HTML element with the total credits
+    const totalCreditsElement = document.getElementById('total-credits');
+    if (totalCreditsElement) {
+        totalCreditsElement.textContent = totalCredits;
+    }
+}
+
+
 //Required Courses Dropdown function
 $(document).ready(function () {
     // Event listener for major selection change
@@ -448,6 +520,7 @@ function displayCompletedCourses() {
     });
 }
 
+//Expand Arrow for Completed Courses Manager
 function toggleExpand() {
     var content = document.getElementById('completedCoursesList');
     var arrow = document.querySelector('.expand-arrow');
@@ -566,11 +639,109 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
+//Open Stats SidePanel
 function openNav() {
     document.getElementById("mySidepanel").style.width = "300px";
 }
 
-/* Set the width of the sidebar to 0 (hide it) */
+//Close Stats SidePanel
 function closeNav() {
     document.getElementById("mySidepanel").style.width = "0";
+}
+
+
+
+function handleGeneratePDFResponse(response) {
+    // Access the PDF data from the response
+    const pdfData = response.pdf_data;
+
+    // Use the PDF data as needed
+    const iframe = document.createElement('iframe');
+    iframe.src = 'data:application/pdf;base64,' + btoa(pdfData);
+    document.body.appendChild(iframe);
+}
+
+//Fetch to_schedule Array From Flask
+$(document).ready(function () {
+    // Event listener for form submission
+    $('#pdfForm').submit(function (event) {
+        // Prevent default form submission behavior
+        event.preventDefault();
+
+        // Serialize form data
+        var formData = $(this).serialize();
+
+        // Send AJAX request to the server
+        $.ajax({
+            type: "POST",
+            url: "/generate_pos",
+            data: formData,
+            success: function (response) {
+                // Handle the response data containing the schedule information
+                console.log(response); // Check if the response contains the expected data
+                generateCourses(response); // Pass the 'to_schedule' data to the generateCourses function
+                $('#alert').html('<p class="success">Plan of Study has been Generated.</p>').show();
+                setTimeout(function () {
+                    $('#alert').hide();
+                }, 5000); // Hide the alert after 3 seconds
+            },
+            error: function (xhr, status, error) {
+                // Handle error
+                console.error(xhr.responseText);
+            }
+        });
+    });
+});
+
+
+//Stats Page Generation
+function generateCourses(to_schedule) {
+    // Log the length of the to_schedule array
+    console.log(to_schedule);
+
+    // Check if to_schedule is defined and not null
+    if (to_schedule && to_schedule.length > 0) {
+        // Initialize arrays for each semester
+        var springCourses = [];
+        var fallCourses = [];
+        var allCourses = [];
+
+        // Iterate over the to_schedule array and populate semester arrays
+        to_schedule.forEach(course => {
+            if (course.spring && !course.fall && !course.summer) {
+                springCourses.push(course.cname);
+            }
+            if (course.fall && !course.spring && !course.summer) {
+                fallCourses.push(course.cname);
+            }
+            // If a course is available in both spring and fall, include it in allCourses
+            if (course.spring && course.fall && course.summer) {
+                allCourses.push(course.cname);
+            }
+        });
+
+        // Generate HTML content for each semester
+        var springHTML = "<h1>Spring Courses:</h1>";
+        springCourses.forEach(course => {
+            springHTML += "<p>" + course + "</p>";
+        });
+
+        var fallHTML = "<h1>Fall Courses:</h1>";
+        fallCourses.forEach(course => {
+            fallHTML += "<p>" + course + "</p>";
+        });
+
+        var allHTML = "<h1>Available All Semesters:</h1>";
+        allCourses.forEach(course => {
+            allHTML += "<p>" + course + "</p>";
+        });
+
+        // Insert HTML content into respective div elements
+        document.getElementById("springCourses").innerHTML = springHTML;
+        document.getElementById("fallCourses").innerHTML = fallHTML;
+        document.getElementById("allCourses").innerHTML = allHTML;
+    } else {
+        // Handle case where data is undefined or empty
+        console.error('Data is undefined or empty');
+    }
 }
