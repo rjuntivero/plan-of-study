@@ -532,7 +532,8 @@ li.completed-course {
 }
 
 #emailModal,
-#posModal {
+#posModal,
+#helpModal {
     z-index: 1500;
 }
 
@@ -705,7 +706,7 @@ li.completed-course {
     right: 0;
     background-color: #0A233f;
     /* Black*/
-    overflow: hidden;
+    overflow: auto;
     padding-top: 60px;
     /* Place content 60px from the top */
     transition: 0.5s;
@@ -728,10 +729,28 @@ li.completed-course {
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif
 }
 
+.sidepanel h1 {
+    color: white;
+    font-size: small;
+    margin-left: 20px;
+    text-decoration: underline;
+}
+
+.sidepanel p {
+    font-size: smaller;
+    color: white;
+    margin-bottom: 0;
+    margin-left: 20px;
+    margin-top: 0;
+    max-height: 20px;
+    /* Adjust color as needed */
+}
+
 /* When you mouse over the navigation links, change their color */
 .sidepanel a {
     color: #f1f1f1;
     text-decoration: none;
+    overflow: auto;
 }
 
 /* Position and style the close button (top right corner) */
@@ -758,4 +777,24 @@ li.completed-course {
     border-radius: 5px;
     border-style: none;
     padding: 5px 8px;
+}
+
+.required_course_section {
+    font-size: small;
+}
+
+#helpModal {
+    width: max-content;
+    /* Set the width to 1000px */
+    max-height: calc(100vh - 100px);
+    /* Set maximum height to 100% viewport height minus 100px */
+    overflow-y: auto;
+    /* Add vertical scroll if content exceeds max height */
+    left: 50%;
+    /* Position the modal 50% from the left */
+    top: 50%;
+    /* Position the modal 50% from the top */
+    transform: translate(-50%, -50%);
+    font-size: small;
+    /* Center the modal vertically and horizontally */
 }
