@@ -1,0 +1,41 @@
+{
+  "helpModal": {
+    "title": "Welcome to the Plan of Study WebApp for UNF's School of Computing",
+    "content": [
+      {
+        "header": "Overview:",
+        "text": "This WebApp was desgined to streamline the Plan of Study creation process for College of Computing Students. Here, students can input their relevant academic information/history to automatically generate a Plan of Study form that they can email to their advisor."
+      },
+      {
+        "header": "Select Major:",
+        "text": "A list of all required Core Courses for the major selected in the dropdown box will be displayed. When completed courses are added, completed courses in this list will be highlighted as green."
+      },
+      {
+        "header": "Course Catalog:",
+        "text": "This course catalog contains all relevant courses for Computing Majors. Searching through the catalog yields a class' relevant information along with an 'Add' button. The 'Add' button is used to add the course to a list of courses that have already been completed. Search Filters may be applied using the dropdowns above to limit search results. The Course Catalog also contains a Course Manager called 'My Completed Courses'. Users can open this manager to remove completed courses that they may have mistakenly added."
+      },
+      {
+        "header": "Calendar:",
+        "text": "The Calendar is used in determining which academic semesters to include/exclude from the generated Plan of Study. The Start and End dropdowns indicate admission year and graduation year respectively. After generating relevant academic years, students may choose to exclude semesters they will not be taking by clicking the 'X' next to the semester."
+      },
+      {
+        "header": "Send Email:",
+        "text": "A Plan of Study form may be emailed to an advisor by inputting the relevant information"
+      },
+      {
+        "header": "Generate Plan of Study:",
+        "text": "Used to generate Plan of Study Schedule on a new page. Includes a link to UNF's official Plan of Study Template"
+      },
+      {
+        "header": "Stats:",
+        "text": "This will give an overview of the availability of courses that were included in the generated Schedule; This is useful for users who may wish to move classes around within the existing generated schedule."
+      },
+      {
+        "header": "Progress Circle:",
+        "text": "This progress circle indicates the amount of progress a student has made in completing their required courses for their specific major. Above the progress circle is also an indicator for the amount of required credits that are left to complete."
+      }
+    ]
+  },
+  "emailModal": {},
+  "posModal": {}
+}
