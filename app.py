@@ -1,14 +1,11 @@
-from flask import Flask, render_template, request, send_file, Blueprint, jsonify, Response, make_response, request, redirect, current_app, render_template_string
+from flask import Flask, render_template, request, jsonify, request, redirect
 from flask import session as flask_session
-from flask_sqlalchemy import SQLAlchemy
 from Database import Base, Course, association_table
 from sqlalchemy import create_engine, collate
 from sqlalchemy.orm import sessionmaker, aliased
-from sqlalchemy.exc import IntegrityError
 from flask_mail import Mail, Message
-import math, os, io, random, json
+import os, random
 from datetime import datetime
-from io import BytesIO
 
 app = Flask(__name__)
 
@@ -163,17 +160,10 @@ def search():
     if search_query:
         # Prioritize course with matching names
         query = query.filter(Course.cname.ilike(f'%{search_query}%'))
-    
-    #debug statement
-    #count_before_filter = query.count()
-    #print("Count of courses before filter:", count_before_filter)
 
     query = query.order_by(collate(Course.cname, 'NOCASE'))
 
     courses = query.all()
-    #debug statement
-    #count_after_filter = len(courses)
-    #print("Count of courses after filter:", count_after_filter)
     
     session.close()
     if not courses:
@@ -248,11 +238,6 @@ def process_semesters():
 @app.route('/generate_pos', methods=['POST'])
 def generatePlanOfStudy():
     try:
-        #initialize allowed amount of scheduable courses
-        #max_allowed_semesters = 9
-       # semesters_array = flask_session.get('semesters_data').get('semestersArray')
-        #if len(semesters_array) > max_allowed_semesters:
-         #   return jsonify(sucess=False, error="Plan of Study Allows Only a Maximum of 9 Scheduable Semesters")
 
         #Find The Department (major = department)
         major = request.form.get('majorDropdown')
